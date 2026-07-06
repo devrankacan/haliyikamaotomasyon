@@ -1,5 +1,4 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 
@@ -22,7 +21,7 @@ export function SettingsScreen() {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <View style={styles.rowLeft}>
-                <Ionicons name="pricetag-outline" size={18} color="#2563eb" />
+                <Text style={styles.tagIcon}>🏷️</Text>
                 <Text style={styles.label}>{item.label}</Text>
               </View>
               <Text style={styles.price}>{item.unitPrice.toFixed(2)} ₺</Text>
@@ -54,6 +53,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   rowLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
+  tagIcon: { fontSize: 15 },
   separator: { height: StyleSheet.hairlineWidth, backgroundColor: "#e2e8f0" },
   label: { fontSize: 15, color: "#0f172a" },
   price: { fontSize: 15, fontWeight: "600", color: "#0f172a" },

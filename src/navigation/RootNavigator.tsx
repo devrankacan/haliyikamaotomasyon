@@ -1,7 +1,7 @@
+import { Text } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
 
 import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
@@ -37,11 +37,11 @@ const screenHeaderOptions = {
   headerShadowVisible: false,
 };
 
-const TAB_ICONS: Record<keyof MainTabsParamList, { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
-  Dashboard: { active: "grid", inactive: "grid-outline" },
-  Customers: { active: "people", inactive: "people-outline" },
-  Orders: { active: "cube", inactive: "cube-outline" },
-  Settings: { active: "settings", inactive: "settings-outline" },
+const TAB_ICONS: Record<keyof MainTabsParamList, string> = {
+  Dashboard: "📊",
+  Customers: "👥",
+  Orders: "📦",
+  Settings: "⚙️",
 };
 
 function MainTabs() {
@@ -58,10 +58,9 @@ function MainTabs() {
           paddingBottom: 8,
           borderTopColor: "#e2e8f0",
         },
-        tabBarIcon: ({ color, focused, size }) => {
-          const icons = TAB_ICONS[route.name];
-          return <Ionicons name={focused ? icons.active : icons.inactive} size={size} color={color} />;
-        },
+        tabBarIcon: ({ focused }) => (
+          <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{TAB_ICONS[route.name]}</Text>
+        ),
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Özet" }} />
