@@ -3,6 +3,7 @@ export type RootStackParamList = {
   MainTabs: undefined;
   CustomerDetail: { customerId: string };
   CustomerForm: { customerId?: string };
+  ContactsImport: undefined;
   OrderCustomerPicker: undefined;
   OrderDetail: { orderId: string };
   OrderForm: { customerId: string; orderId?: string };

@@ -1,4 +1,4 @@
-import { Pressable, SectionList, StyleSheet, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, SectionList, StyleSheet, Text, TextInput, View } from "react-native";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { Avatar } from "@/components/Avatar";
 import { AlphabetIndex } from "@/components/AlphabetIndex";
+import { ContactBookIcon, PersonIcon } from "@/components/icons";
 import type { Customer } from "@/types/domain";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Customers">;
@@ -42,11 +43,12 @@ export function CustomerListScreen(_props: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: customers, isLoading } = useCustomers();
   const [query, setQuery] = useState("");
+  const [chooserOpen, setChooserOpen] = useState(false);
   const sectionListRef = useRef<SectionList<Customer>>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <HeaderAddButton onPress={() => navigation.navigate("CustomerForm", {})} />,
+      headerRight: () => <HeaderAddButton onPress={() => setChooserOpen(true)} />,
     });
   }, [navigation]);
 
@@ -74,13 +76,41 @@ export function CustomerListScreen(_props: Props) {
     });
   }
 
+  const chooserModal = (
+    <Modal visible={chooserOpen} transparent animationType="fade" onRequestClose={() => setChooserOpen(false)}>
+      <Pressable style={styles.backdrop} onPress={() => setChooserOpen(false)}>
+        <View style={styles.chooserMenu}>
+          <Pressable
+            style={({ pressed }) => [styles.chooserItem, pressed && styles.chooserItemPressed]}
+            onPress={() => {
+              setChooserOpen(false);
+              navigation.navigate("CustomerForm", {});
+            }}
+          >
+            <PersonIcon size={20} color="#2563eb" />
+            <Text style={styles.chooserText}>Manuel Müşteri Ekle</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [styles.chooserItem, pressed && styles.chooserItemPressed]}
+            onPress={() => {
+              setChooserOpen(false);
+              navigation.navigate("ContactsImport");
+            }}
+          >
+            <ContactBookIcon size={20} color="#2563eb" />
+            <Text style={styles.chooserText}>Rehberden Ekle</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+
   if (!isLoading && (customers ?? []).length === 0) {
     return (
-      <EmptyState
-        message="Henüz müşteri eklenmedi."
-        actionLabel="+ Müşteri Ekle"
-        onAction={() => navigation.navigate("CustomerForm", {})}
-      />
+      <>
+        <EmptyState message="Henüz müşteri eklenmedi." actionLabel="+ Müşteri Ekle" onAction={() => setChooserOpen(true)} />
+        {chooserModal}
+      </>
     );
   }
 
@@ -129,6 +159,7 @@ export function CustomerListScreen(_props: Props) {
           <AlphabetIndex letters={letters} onSelect={handleSelectLetter} />
         </View>
       )}
+      {chooserModal}
     </View>
   );
 }
@@ -173,4 +204,27 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
   phone: { color: "#64748b", marginTop: 2 },
   chevron: { color: "#cbd5e1", fontSize: 22 },
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.4)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  chooserMenu: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 340,
+    paddingVertical: 6,
+  },
+  chooserItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+  },
+  chooserItemPressed: { backgroundColor: "#f1f5f9" },
+  chooserText: { fontSize: 15, fontWeight: "600", color: "#0f172a" },
 });

@@ -12,6 +12,7 @@ import { DashboardScreen } from "@/screens/dashboard/DashboardScreen";
 import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
 import { CustomerDetailScreen } from "@/screens/customers/CustomerDetailScreen";
 import { CustomerFormScreen } from "@/screens/customers/CustomerFormScreen";
+import { ContactsImportScreen } from "@/screens/customers/ContactsImportScreen";
 import { OrderListScreen } from "@/screens/orders/OrderListScreen";
 import { OrderCustomerPickerScreen } from "@/screens/orders/OrderCustomerPickerScreen";
 import { OrderDetailScreen } from "@/screens/orders/OrderDetailScreen";
@@ -96,6 +97,11 @@ export function RootNavigator() {
           name="CustomerForm"
           component={CustomerFormScreen}
           options={{ ...screenHeaderOptions, headerShown: true, title: "Yeni Müşteri" }}
+        />
+        <Stack.Screen
+          name="ContactsImport"
+          component={ContactsImportScreen}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Rehberden Ekle" }}
         />
         <Stack.Screen
           name="OrderCustomerPicker"

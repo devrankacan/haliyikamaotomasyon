@@ -12,6 +12,14 @@
     },
     "android": {
       "package": "com.haliyikamaotomasyon.app"
-    }
+    },
+    "plugins": [
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Müşteri eklemek için telefon rehberinize erişim izni gerekiyor."
+        }
+      ]
+    ]
   }
 }

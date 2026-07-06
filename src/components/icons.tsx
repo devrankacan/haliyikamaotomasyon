@@ -106,6 +106,31 @@ export function ChatIcon({ size = 22, color = "#0f172a" }: IconProps) {
   );
 }
 
+export function PersonIcon({ size = 22, color = "#ffffff" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+        stroke={color}
+        strokeWidth={2}
+        {...common}
+      />
+      <Circle cx="12" cy="7" r="4" stroke={color} strokeWidth={2} {...common} />
+    </Svg>
+  );
+}
+
+export function ContactBookIcon({ size = 22, color = "#0f172a" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x="4" y="3" width="16" height="18" rx="2" stroke={color} strokeWidth={2} {...common} />
+      <Circle cx="12" cy="10" r="2.5" stroke={color} strokeWidth={2} {...common} />
+      <Path d="M8 17c0-1.66 1.79-3 4-3s4 1.34 4 3" stroke={color} strokeWidth={2} {...common} />
+      <Path d="M4 8h1M4 12h1M4 16h1" stroke={color} strokeWidth={2} {...common} />
+    </Svg>
+  );
+}
+
 export function WhatsAppIcon({ size = 22, color = "#ffffff" }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
