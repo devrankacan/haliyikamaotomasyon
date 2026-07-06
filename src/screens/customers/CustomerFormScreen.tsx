@@ -1,19 +1,39 @@
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
+import { useCustomers } from "@/hooks/useCustomers";
 import { PrimaryButton } from "@/components/PrimaryButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CustomerForm">;
 
-export function CustomerFormScreen({ navigation }: Props) {
+export function CustomerFormScreen({ navigation, route }: Props) {
+  const { customerId } = route.params ?? {};
+  const isEditing = Boolean(customerId);
+  const { data: customers } = useCustomers();
+  const existing = customers?.find((c) => c.id === customerId);
+
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [addressText, setAddressText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [loadedExisting, setLoadedExisting] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: isEditing ? "Müşteriyi Düzenle" : "Yeni Müşteri" });
+  }, [navigation, isEditing]);
+
+  useEffect(() => {
+    if (existing && !loadedExisting) {
+      setName(existing.name);
+      setPhone(existing.phone);
+      setAddressText(existing.addresses[0]?.addressText ?? "");
+      setLoadedExisting(true);
+    }
+  }, [existing, loadedExisting]);
 
   async function handleSave() {
     if (!name.trim() || !phone.trim()) {
@@ -23,6 +43,37 @@ export function CustomerFormScreen({ navigation }: Props) {
 
     setError(null);
     setSaving(true);
+
+    if (isEditing && customerId) {
+      const { error: updateError } = await supabase
+        .from("customers")
+        .update({ name: name.trim(), phone: phone.trim() })
+        .eq("id", customerId);
+
+      if (updateError) {
+        setError(updateError.message);
+        setSaving(false);
+        return;
+      }
+
+      const existingAddress = existing?.addresses[0];
+      if (existingAddress) {
+        if (addressText.trim() !== existingAddress.addressText) {
+          await supabase
+            .from("customer_addresses")
+            .update({ address_text: addressText.trim() })
+            .eq("id", existingAddress.id);
+        }
+      } else if (addressText.trim()) {
+        await supabase
+          .from("customer_addresses")
+          .insert({ customer_id: customerId, label: "Ev", address_text: addressText.trim() });
+      }
+
+      setSaving(false);
+      navigation.replace("CustomerDetail", { customerId });
+      return;
+    }
 
     const { data: customer, error: customerError } = await supabase
       .from("customers")
@@ -73,7 +124,11 @@ export function CustomerFormScreen({ navigation }: Props) {
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
         <View style={styles.buttonWrap}>
-          <PrimaryButton title={saving ? "Kaydediliyor…" : "Kaydet"} onPress={handleSave} disabled={saving} />
+          <PrimaryButton
+            title={saving ? "Kaydediliyor…" : isEditing ? "Güncelle" : "Kaydet"}
+            onPress={handleSave}
+            disabled={saving}
+          />
         </View>
       </View>
     </View>

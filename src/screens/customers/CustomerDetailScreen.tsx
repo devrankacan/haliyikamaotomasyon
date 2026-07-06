@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -19,6 +20,16 @@ export function CustomerDetailScreen({ route }: Props) {
   const { data: orders } = useOrders();
   const customer = customers?.find((c: Customer) => c.id === customerId);
   const customerOrders = (orders ?? []).filter((o: Order) => o.customerId === customerId);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={() => navigation.navigate("CustomerForm", { customerId })} hitSlop={12}>
+          <Text style={styles.editText}>Düzenle</Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation, customerId]);
 
   if (!customer) {
     return <Text style={styles.notFound}>Müşteri bulunamadı.</Text>;
@@ -110,6 +121,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   detail: { color: "#334155", fontSize: 14 },
+  editText: { color: "#2563eb", fontWeight: "700", fontSize: 15, marginRight: 4 },
   buttonWrap: { marginTop: 16 },
   orderRow: {
     flexDirection: "row",
