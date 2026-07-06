@@ -8,6 +8,7 @@ import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
 import { useCustomers } from "@/hooks/useCustomers";
 import { EmptyState } from "@/components/EmptyState";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
+import { Avatar } from "@/components/Avatar";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Customers">;
 
@@ -33,6 +34,7 @@ export function CustomerListScreen(_props: Props) {
 
   return (
     <FlatList
+      style={styles.screen}
       contentContainerStyle={styles.list}
       data={customers ?? []}
       keyExtractor={(item) => item.id}
@@ -41,7 +43,8 @@ export function CustomerListScreen(_props: Props) {
           style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           onPress={() => navigation.navigate("CustomerDetail", { customerId: item.id })}
         >
-          <View>
+          <Avatar name={item.name} />
+          <View style={styles.info}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.phone}>{item.phone}</Text>
           </View>
@@ -53,16 +56,23 @@ export function CustomerListScreen(_props: Props) {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16, gap: 8 },
+  screen: { backgroundColor: "#f1f5f9" },
+  list: { padding: 16, gap: 10 },
   row: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    padding: 14,
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    padding: 12,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: 12,
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   rowPressed: { opacity: 0.6 },
+  info: { flex: 1 },
   name: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
   phone: { color: "#64748b", marginTop: 2 },
   chevron: { color: "#cbd5e1", fontSize: 22 },

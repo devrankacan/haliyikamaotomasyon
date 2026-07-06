@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { useCustomers } from "@/hooks/useCustomers";
 import type { Customer, ItemType } from "@/types/domain";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { Avatar } from "@/components/Avatar";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderForm">;
 
@@ -57,46 +58,70 @@ export function OrderFormScreen({ route, navigation }: Props) {
   }
 
   return (
-    <View style={styles.container}>
-      {customer ? <Text style={styles.customerName}>{customer.name}</Text> : null}
+    <View style={styles.screen}>
+      {customer ? (
+        <View style={styles.customerRow}>
+          <Avatar name={customer.name} size={40} />
+          <Text style={styles.customerName}>{customer.name}</Text>
+        </View>
+      ) : null}
 
-      <Text style={styles.label}>Alan (m²)</Text>
-      <TextInput
-        style={styles.input}
-        value={areaM2}
-        onChangeText={setAreaM2}
-        keyboardType="numeric"
-        placeholder="Örn. 12"
-      />
-      <Text style={styles.label}>Birim Fiyat (₺)</Text>
-      <TextInput
-        style={styles.input}
-        value={unitPrice}
-        onChangeText={setUnitPrice}
-        keyboardType="numeric"
-        placeholder="Örn. 50"
-      />
+      <View style={styles.card}>
+        <Text style={styles.label}>Alan (m²)</Text>
+        <TextInput
+          style={styles.input}
+          value={areaM2}
+          onChangeText={setAreaM2}
+          keyboardType="numeric"
+          placeholder="Örn. 12"
+        />
+        <Text style={styles.label}>Birim Fiyat (₺)</Text>
+        <TextInput
+          style={styles.input}
+          value={unitPrice}
+          onChangeText={setUnitPrice}
+          keyboardType="numeric"
+          placeholder="Örn. 50"
+        />
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <View style={styles.buttonWrap}>
-        <PrimaryButton title={saving ? "Kaydediliyor…" : "Siparişi Oluştur"} onPress={handleSave} disabled={saving} />
+        <View style={styles.buttonWrap}>
+          <PrimaryButton
+            title={saving ? "Kaydediliyor…" : "Siparişi Oluştur"}
+            onPress={handleSave}
+            disabled={saving}
+          />
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, gap: 8 },
-  customerName: { fontSize: 17, fontWeight: "700", color: "#0f172a", marginBottom: 8 },
+  screen: { flex: 1, backgroundColor: "#f1f5f9", padding: 16, gap: 16 },
+  customerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  customerName: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
   label: { fontSize: 13, color: "#475569", marginTop: 8 },
   input: {
     borderWidth: 1,
     borderColor: "#cbd5e1",
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 12,
     fontSize: 15,
+    color: "#0f172a",
   },
   error: { color: "#ef4444", marginTop: 4 },
-  buttonWrap: { marginTop: 16 },
+  buttonWrap: { marginTop: 12 },
 });

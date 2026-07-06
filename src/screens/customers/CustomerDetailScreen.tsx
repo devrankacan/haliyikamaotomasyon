@@ -8,6 +8,7 @@ import { useOrders } from "@/hooks/useOrders";
 import type { Customer, CustomerAddress, Order } from "@/types/domain";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Avatar } from "@/components/Avatar";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CustomerDetail">;
 
@@ -24,30 +25,37 @@ export function CustomerDetailScreen({ route }: Props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.name}>{customer.name}</Text>
-      <Text style={styles.detail}>Telefon: {customer.phone}</Text>
-      {customer.secondaryPhone ? (
-        <Text style={styles.detail}>İkincil telefon: {customer.secondaryPhone}</Text>
-      ) : null}
+    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+      <View style={styles.card}>
+        <View style={styles.headerRow}>
+          <Avatar name={customer.name} size={52} />
+          <View style={styles.headerInfo}>
+            <Text style={styles.name}>{customer.name}</Text>
+            <Text style={styles.detail}>{customer.phone}</Text>
+          </View>
+        </View>
+        {customer.secondaryPhone ? (
+          <Text style={styles.detail}>İkincil telefon: {customer.secondaryPhone}</Text>
+        ) : null}
 
-      {customer.addresses.length > 0 ? (
-        <>
-          <Text style={styles.sectionTitle}>Adresler</Text>
-          {customer.addresses.map((a: CustomerAddress) => (
-            <Text key={a.id} style={styles.detail}>
-              {a.label}: {a.addressText}
-            </Text>
-          ))}
-        </>
-      ) : null}
+        {customer.addresses.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle}>Adresler</Text>
+            {customer.addresses.map((a: CustomerAddress) => (
+              <Text key={a.id} style={styles.detail}>
+                {a.label}: {a.addressText}
+              </Text>
+            ))}
+          </>
+        ) : null}
 
-      {customer.notes ? (
-        <>
-          <Text style={styles.sectionTitle}>Notlar</Text>
-          <Text style={styles.detail}>{customer.notes}</Text>
-        </>
-      ) : null}
+        {customer.notes ? (
+          <>
+            <Text style={styles.sectionTitle}>Notlar</Text>
+            <Text style={styles.detail}>{customer.notes}</Text>
+          </>
+        ) : null}
+      </View>
 
       <View style={styles.buttonWrap}>
         <PrimaryButton
@@ -56,7 +64,7 @@ export function CustomerDetailScreen({ route }: Props) {
         />
       </View>
 
-      <Text style={styles.sectionTitle}>Sipariş Geçmişi</Text>
+      <Text style={styles.sectionTitleOutside}>Sipariş Geçmişi</Text>
       {customerOrders.length === 0 ? (
         <Text style={styles.detail}>Bu müşteriye ait sipariş yok.</Text>
       ) : (
@@ -76,19 +84,46 @@ export function CustomerDetailScreen({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
+  screen: { backgroundColor: "#f1f5f9" },
   container: { padding: 16, gap: 4 },
-  name: { fontSize: 20, fontWeight: "700", marginBottom: 8, color: "#0f172a" },
-  sectionTitle: { fontSize: 15, fontWeight: "600", marginTop: 16, color: "#0f172a" },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 16,
+    gap: 4,
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  headerRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
+  headerInfo: { flex: 1 },
+  name: { fontSize: 18, fontWeight: "700", color: "#0f172a" },
+  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#64748b", marginTop: 14, textTransform: "uppercase" },
+  sectionTitleOutside: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#64748b",
+    marginTop: 20,
+    marginBottom: 4,
+    textTransform: "uppercase",
+  },
   detail: { color: "#334155", fontSize: 14 },
-  buttonWrap: { marginTop: 20 },
+  buttonWrap: { marginTop: 16 },
   orderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
-    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
     padding: 12,
     marginTop: 8,
+    shadowColor: "#0f172a",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   orderRowPressed: { opacity: 0.6 },
   notFound: { padding: 24, textAlign: "center", color: "#64748b" },

@@ -1,6 +1,7 @@
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
 
 import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
@@ -22,7 +23,7 @@ const navTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: "#2563eb",
-    background: "#ffffff",
+    background: "#f8fafc",
     card: "#ffffff",
     text: "#0f172a",
     border: "#e2e8f0",
@@ -36,14 +37,32 @@ const screenHeaderOptions = {
   headerShadowVisible: false,
 };
 
+const TAB_ICONS: Record<keyof MainTabsParamList, { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }> = {
+  Dashboard: { active: "grid", inactive: "grid-outline" },
+  Customers: { active: "people", inactive: "people-outline" },
+  Orders: { active: "cube", inactive: "cube-outline" },
+  Settings: { active: "settings", inactive: "settings-outline" },
+};
+
 function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         ...screenHeaderOptions,
         tabBarActiveTintColor: "#2563eb",
         tabBarInactiveTintColor: "#94a3b8",
-      }}
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "600" as const },
+        tabBarStyle: {
+          height: 62,
+          paddingTop: 6,
+          paddingBottom: 8,
+          borderTopColor: "#e2e8f0",
+        },
+        tabBarIcon: ({ color, focused, size }) => {
+          const icons = TAB_ICONS[route.name];
+          return <Ionicons name={focused ? icons.active : icons.inactive} size={size} color={color} />;
+        },
+      })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Özet" }} />
       <Tab.Screen name="Customers" component={CustomerListScreen} options={{ title: "Müşteriler" }} />
