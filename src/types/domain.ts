@@ -85,3 +85,14 @@ export interface PriceListEntry {
   unit: "m2" | "adet";
   unitPrice: number;
 }
+
+export type SmsProvider = "netgsm" | "iletimerkezi" | "twilio" | "diger";
+
+export interface SmsProviderSettings {
+  id: string;
+  companyId: string;
+  provider: SmsProvider;
+  apiKey: string | null;
+  apiSecret: string | null;
+  senderId: string | null;
+}

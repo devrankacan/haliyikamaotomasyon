@@ -117,6 +117,19 @@ create table notifications_log (
   status text not null default 'gonderildi'
 );
 
+-- Firma başına tek satır: toplu SMS sağlayıcı kimlik bilgileri.
+-- api_secret şimdilik düz metin — ileride bir Edge Function'a taşınıp
+-- client'tan okunamaz hale getirilmesi önerilir.
+create table sms_provider_settings (
+  id uuid primary key default uuid_generate_v4(),
+  company_id uuid not null unique references companies(id) on delete cascade,
+  provider text not null check (provider in ('netgsm', 'iletimerkezi', 'twilio', 'diger')),
+  api_key text,
+  api_secret text,
+  sender_id text,
+  updated_at timestamptz not null default now()
+);
+
 -- Row Level Security: kullanıcı yalnızca kendi company_id'sine ait veriyi görür.
 alter table companies enable row level security;
 alter table users enable row level security;
@@ -128,6 +141,7 @@ alter table order_items enable row level security;
 alter table order_status_history enable row level security;
 alter table payments enable row level security;
 alter table notifications_log enable row level security;
+alter table sms_provider_settings enable row level security;
 
 create or replace function current_company_id()
 returns uuid
@@ -165,6 +179,10 @@ create trigger trg_price_list_set_company_id
   before insert on price_list
   for each row execute function set_company_id();
 
+create trigger trg_sms_provider_settings_set_company_id
+  before insert on sms_provider_settings
+  for each row execute function set_company_id();
+
 create policy "users_own_company" on users
   for select using (company_id = current_company_id());
 
@@ -181,6 +199,10 @@ create policy "customer_addresses_via_customer" on customer_addresses
   );
 
 create policy "price_list_company_isolation" on price_list
+  for all using (company_id = current_company_id())
+  with check (company_id = current_company_id());
+
+create policy "sms_provider_settings_company_isolation" on sms_provider_settings
   for all using (company_id = current_company_id())
   with check (company_id = current_company_id());
 
