@@ -1,0 +1,53 @@
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+
+import { useOrders } from "@/hooks/useOrders";
+import type { Order } from "@/types/domain";
+
+function SummaryCard({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardValue}>{value}</Text>
+      <Text style={styles.cardLabel}>{label}</Text>
+    </View>
+  );
+}
+
+export function DashboardScreen() {
+  const { data: orders } = useOrders();
+
+  const openOrders = (orders ?? []).filter((o: Order) => o.status !== "teslim_edildi" && o.status !== "iptal_edildi");
+  const pendingPayment = (orders ?? []).filter((o: Order) => o.paymentStatus !== "tahsil_edildi");
+  const todayDeliveries = (orders ?? []).filter((o: Order) => {
+    if (!o.deliveryDate) return false;
+    const d = new Date(o.deliveryDate);
+    const today = new Date();
+    return d.toDateString() === today.toDateString();
+  });
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Özet</Text>
+      <View style={styles.row}>
+        <SummaryCard label="Devam Eden Sipariş" value={String(openOrders.length)} />
+        <SummaryCard label="Bekleyen Tahsilat" value={String(pendingPayment.length)} />
+        <SummaryCard label="Bugünkü Teslimat" value={String(todayDeliveries.length)} />
+      </View>
+      {/* TODO(Faz 2): gelir grafiği, personel iş yükü */}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 16, gap: 16 },
+  title: { fontSize: 20, fontWeight: "700" },
+  row: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
+  card: {
+    flexGrow: 1,
+    minWidth: 140,
+    backgroundColor: "#f1f5f9",
+    borderRadius: 12,
+    padding: 16,
+  },
+  cardValue: { fontSize: 24, fontWeight: "700" },
+  cardLabel: { color: "#475569", marginTop: 4 },
+});
