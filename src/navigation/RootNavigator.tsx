@@ -1,4 +1,4 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -9,6 +9,7 @@ import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
 import { CustomerDetailScreen } from "@/screens/customers/CustomerDetailScreen";
 import { CustomerFormScreen } from "@/screens/customers/CustomerFormScreen";
 import { OrderListScreen } from "@/screens/orders/OrderListScreen";
+import { OrderCustomerPickerScreen } from "@/screens/orders/OrderCustomerPickerScreen";
 import { OrderDetailScreen } from "@/screens/orders/OrderDetailScreen";
 import { OrderFormScreen } from "@/screens/orders/OrderFormScreen";
 import { SettingsScreen } from "@/screens/settings/SettingsScreen";
@@ -16,9 +17,34 @@ import { SettingsScreen } from "@/screens/settings/SettingsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#2563eb",
+    background: "#ffffff",
+    card: "#ffffff",
+    text: "#0f172a",
+    border: "#e2e8f0",
+  },
+};
+
+const screenHeaderOptions = {
+  headerStyle: { backgroundColor: "#ffffff" },
+  headerTitleStyle: { color: "#0f172a", fontWeight: "700" as const },
+  headerTintColor: "#2563eb",
+  headerShadowVisible: false,
+};
+
 function MainTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        ...screenHeaderOptions,
+        tabBarActiveTintColor: "#2563eb",
+        tabBarInactiveTintColor: "#94a3b8",
+      }}
+    >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Özet" }} />
       <Tab.Screen name="Customers" component={CustomerListScreen} options={{ title: "Müşteriler" }} />
       <Tab.Screen name="Orders" component={OrderListScreen} options={{ title: "Siparişler" }} />
@@ -30,29 +56,34 @@ function MainTabs() {
 export function RootNavigator() {
   // TODO(Faz 1): Supabase auth durumuna göre Login <-> MainTabs geçişini yönet.
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen
           name="CustomerDetail"
           component={CustomerDetailScreen}
-          options={{ headerShown: true, title: "Müşteri" }}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Müşteri" }}
         />
         <Stack.Screen
           name="CustomerForm"
           component={CustomerFormScreen}
-          options={{ headerShown: true, title: "Müşteri Formu" }}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Yeni Müşteri" }}
+        />
+        <Stack.Screen
+          name="OrderCustomerPicker"
+          component={OrderCustomerPickerScreen}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Müşteri Seç" }}
         />
         <Stack.Screen
           name="OrderDetail"
           component={OrderDetailScreen}
-          options={{ headerShown: true, title: "Sipariş" }}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Sipariş" }}
         />
         <Stack.Screen
           name="OrderForm"
           component={OrderFormScreen}
-          options={{ headerShown: true, title: "Yeni Sipariş" }}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Yeni Sipariş" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

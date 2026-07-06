@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
+import { PrimaryButton } from "@/components/PrimaryButton";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CustomerForm">;
 
@@ -11,39 +12,68 @@ export function CustomerFormScreen({ navigation }: Props) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [addressText, setAddressText] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   async function handleSave() {
-    const { data: customer, error } = await supabase
-      .from("customers")
-      .insert({ name, phone })
-      .select()
-      .single();
-
-    if (error || !customer) {
-      // TODO(Faz 1): kullanıcıya hata mesajı göster (toast/alert)
+    if (!name.trim() || !phone.trim()) {
+      setError("Ad soyad ve telefon zorunlu.");
       return;
     }
 
-    if (addressText) {
+    setError(null);
+    setSaving(true);
+
+    const { data: customer, error: customerError } = await supabase
+      .from("customers")
+      .insert({ name: name.trim(), phone: phone.trim() })
+      .select()
+      .single();
+
+    if (customerError || !customer) {
+      setError(customerError?.message ?? "Müşteri kaydedilemedi.");
+      setSaving(false);
+      return;
+    }
+
+    if (addressText.trim()) {
       await supabase.from("customer_addresses").insert({
         customer_id: customer.id,
         label: "Ev",
-        address_text: addressText,
+        address_text: addressText.trim(),
       });
     }
 
+    setSaving(false);
     navigation.replace("CustomerDetail", { customerId: customer.id });
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Ad Soyad</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} />
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Örn. Ahmet Yılmaz" />
       <Text style={styles.label}>Telefon</Text>
-      <TextInput style={styles.input} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-      <Text style={styles.label}>Adres</Text>
-      <TextInput style={styles.input} value={addressText} onChangeText={setAddressText} multiline />
-      <Button title="Kaydet" onPress={handleSave} />
+      <TextInput
+        style={styles.input}
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+        placeholder="Örn. 0532 000 00 00"
+      />
+      <Text style={styles.label}>Adres (opsiyonel)</Text>
+      <TextInput
+        style={[styles.input, styles.multiline]}
+        value={addressText}
+        onChangeText={setAddressText}
+        multiline
+        placeholder="Ev veya işyeri adresi"
+      />
+
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <View style={styles.buttonWrap}>
+        <PrimaryButton title={saving ? "Kaydediliyor…" : "Kaydet"} onPress={handleSave} disabled={saving} />
+      </View>
     </View>
   );
 }
@@ -58,4 +88,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 15,
   },
+  multiline: { minHeight: 80, textAlignVertical: "top" },
+  error: { color: "#ef4444", marginTop: 4 },
+  buttonWrap: { marginTop: 16 },
 });

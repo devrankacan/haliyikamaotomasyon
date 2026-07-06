@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +8,7 @@ import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
 import { useOrders } from "@/hooks/useOrders";
 import { StatusBadge } from "@/components/StatusBadge";
 import { EmptyState } from "@/components/EmptyState";
+import { HeaderAddButton } from "@/components/HeaderAddButton";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Orders">;
 
@@ -14,8 +16,20 @@ export function OrderListScreen(_props: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: orders, isLoading } = useOrders();
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <HeaderAddButton onPress={() => navigation.navigate("OrderCustomerPicker")} />,
+    });
+  }, [navigation]);
+
   if (!isLoading && (orders ?? []).length === 0) {
-    return <EmptyState message="Henüz sipariş yok. Yeni sipariş oluşturarak başlayın." />;
+    return (
+      <EmptyState
+        message="Henüz sipariş yok."
+        actionLabel="+ Sipariş Oluştur"
+        onAction={() => navigation.navigate("OrderCustomerPicker")}
+      />
+    );
   }
 
   return (
@@ -24,7 +38,10 @@ export function OrderListScreen(_props: Props) {
       data={orders ?? []}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <Pressable style={styles.row} onPress={() => navigation.navigate("OrderDetail", { orderId: item.id })}>
+        <Pressable
+          style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+          onPress={() => navigation.navigate("OrderDetail", { orderId: item.id })}
+        >
           <View style={styles.rowHeader}>
             <Text style={styles.orderId}>#{item.id.slice(0, 8)}</Text>
             <StatusBadge status={item.status} />
@@ -42,11 +59,12 @@ const styles = StyleSheet.create({
   list: { padding: 16, gap: 8 },
   row: {
     backgroundColor: "#f8fafc",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 14,
     gap: 6,
   },
+  rowPressed: { opacity: 0.6 },
   rowHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  orderId: { fontWeight: "600" },
+  orderId: { fontWeight: "600", color: "#0f172a" },
   amount: { color: "#475569" },
 });
