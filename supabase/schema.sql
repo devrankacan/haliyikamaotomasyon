@@ -56,7 +56,8 @@ create table price_list (
   company_id uuid not null references companies(id) on delete cascade,
   item_type item_type not null,
   unit text not null check (unit in ('m2', 'adet')),
-  unit_price numeric(10, 2) not null
+  unit_price numeric(10, 2) not null,
+  unique (company_id, item_type)
 );
 
 create table orders (
