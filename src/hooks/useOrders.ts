@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/lib/supabase";
 import type { Order } from "@/types/domain";
+import type { OrderStatus } from "@/constants/orderStatus";
 
 async function fetchOrders(): Promise<Order[]> {
   const { data, error } = await supabase
@@ -43,4 +44,26 @@ async function fetchOrders(): Promise<Order[]> {
 
 export function useOrders() {
   return useQuery<Order[]>({ queryKey: ["orders"], queryFn: fetchOrders });
+}
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: string; status: OrderStatus }) => {
+      const { error: updateError } = await supabase.from("orders").update({ status }).eq("id", orderId);
+      if (updateError) throw updateError;
+
+      const { data: userData } = await supabase.auth.getUser();
+      const { error: historyError } = await supabase.from("order_status_history").insert({
+        order_id: orderId,
+        status,
+        changed_by: userData.user?.id ?? null,
+      });
+      if (historyError) throw historyError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+  });
 }

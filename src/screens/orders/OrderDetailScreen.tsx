@@ -1,25 +1,39 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/navigation/types";
-import { useOrders } from "@/hooks/useOrders";
+import { useOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { useCustomers } from "@/hooks/useCustomers";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { Customer, Order, OrderItem } from "@/types/domain";
 import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
-import { PAYMENT_STATUS_LABELS } from "@/constants/orderStatus";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type OrderStatus } from "@/constants/orderStatus";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderDetail">;
+
+const FLOW_STATUSES = ORDER_STATUSES.filter((s) => s !== "iptal_edildi");
 
 export function OrderDetailScreen({ route }: Props) {
   const { orderId } = route.params;
   const { data: orders } = useOrders();
   const { data: customers } = useCustomers();
+  const updateStatus = useUpdateOrderStatus();
+  const [error, setError] = useState<string | null>(null);
   const order = orders?.find((o: Order) => o.id === orderId);
   const customer = customers?.find((c: Customer) => c.id === order?.customerId);
 
   if (!order) {
     return <Text style={styles.notFound}>Sipariş bulunamadı.</Text>;
+  }
+
+  function handleStatusChange(status: OrderStatus) {
+    if (status === order!.status) return;
+    setError(null);
+    updateStatus.mutate(
+      { orderId, status },
+      { onError: (err) => setError(err instanceof Error ? err.message : "Durum güncellenemedi.") }
+    );
   }
 
   return (
@@ -36,6 +50,37 @@ export function OrderDetailScreen({ route }: Props) {
         </Text>
       </View>
 
+      <Text style={styles.sectionTitle}>Durumu Güncelle</Text>
+      <View style={styles.card}>
+        <View style={styles.chipsRow}>
+          {FLOW_STATUSES.map((status) => {
+            const active = order.status === status;
+            return (
+              <Pressable
+                key={status}
+                onPress={() => handleStatusChange(status)}
+                disabled={updateStatus.isPending}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                  {ORDER_STATUS_LABELS[status]}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Pressable
+          onPress={() => handleStatusChange("iptal_edildi")}
+          disabled={updateStatus.isPending}
+          style={styles.cancelRow}
+        >
+          <Text style={[styles.cancelText, order.status === "iptal_edildi" && styles.cancelTextActive]}>
+            {order.status === "iptal_edildi" ? "İptal Edildi ✓" : "Siparişi İptal Et"}
+          </Text>
+        </Pressable>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+      </View>
+
       <Text style={styles.sectionTitle}>Kalemler</Text>
       {order.items.map((item: OrderItem) => (
         <View key={item.id} style={styles.card}>
@@ -46,7 +91,7 @@ export function OrderDetailScreen({ route }: Props) {
           {item.stainNotes ? <Text style={styles.detail}>Not: {item.stainNotes}</Text> : null}
         </View>
       ))}
-      {/* TODO(Faz 2): durum güncelleme butonları, fotoğraf galerisi, tahsilat ekleme */}
+      {/* TODO(Faz 2): fotoğraf galerisi, tahsilat ekleme */}
     </ScrollView>
   );
 }
@@ -69,7 +114,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
+  chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  chip: {
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  chipActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
+  chipText: { color: "#334155", fontSize: 13, fontWeight: "600" },
+  chipTextActive: { color: "#ffffff" },
+  cancelRow: { marginTop: 12, alignSelf: "flex-start" },
+  cancelText: { color: "#ef4444", fontSize: 13, fontWeight: "600" },
+  cancelTextActive: { color: "#94a3b8" },
   itemType: { fontWeight: "600", color: "#0f172a" },
   detail: { color: "#334155", fontSize: 14 },
+  error: { color: "#ef4444", marginTop: 8 },
   notFound: { padding: 24, textAlign: "center", color: "#64748b" },
 });
