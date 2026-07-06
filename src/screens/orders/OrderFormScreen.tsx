@@ -1,31 +1,52 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
 import { useCustomers } from "@/hooks/useCustomers";
+import { usePriceList } from "@/hooks/usePriceList";
 import type { Customer, ItemType } from "@/types/domain";
+import { ITEM_TYPE_DEFAULT_UNIT, ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Avatar } from "@/components/Avatar";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderForm">;
 
+const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS) as ItemType[];
+
 export function OrderFormScreen({ route, navigation }: Props) {
   const { customerId } = route.params;
   const { data: customers } = useCustomers();
+  const { data: priceList } = usePriceList();
   const customer = customers?.find((c: Customer) => c.id === customerId);
-  const [areaM2, setAreaM2] = useState("");
-  const [unitPrice, setUnitPrice] = useState("");
-  const [itemType] = useState<ItemType>("hali");
+
+  const [selectedType, setSelectedType] = useState<ItemType | null>(null);
+  const [quantity, setQuantity] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const priceEntry = priceList?.find((p) => p.itemType === selectedType);
+  const unit = selectedType ? priceEntry?.unit ?? ITEM_TYPE_DEFAULT_UNIT[selectedType] : null;
+  const unitPrice = priceEntry?.unitPrice ?? 0;
+  const total = Number(quantity.replace(",", ".")) * unitPrice || 0;
+
   async function handleSave() {
+    if (!selectedType || !unit) {
+      setError("Önce bir ürün seçin.");
+      return;
+    }
+    if (!quantity || Number(quantity.replace(",", ".")) <= 0) {
+      setError(unit === "m2" ? "Alan (m²) girin." : "Adet girin.");
+      return;
+    }
+    if (unitPrice <= 0) {
+      setError("Bu ürün için Ayarlar > Fiyat Listesi'nden fiyat belirlemelisiniz.");
+      return;
+    }
+
     setError(null);
     setSaving(true);
-
-    const total = Number(areaM2 || 0) * Number(unitPrice || 0);
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -39,12 +60,13 @@ export function OrderFormScreen({ route, navigation }: Props) {
       return;
     }
 
+    const qty = Number(quantity.replace(",", "."));
     const { error: itemError } = await supabase.from("order_items").insert({
       order_id: order.id,
-      item_type: itemType,
-      area_m2: Number(areaM2 || 0),
-      unit_price: Number(unitPrice || 0),
-      quantity: 1,
+      item_type: selectedType,
+      area_m2: unit === "m2" ? qty : null,
+      quantity: unit === "adet" ? qty : 1,
+      unit_price: unitPrice,
     });
 
     setSaving(false);
@@ -67,22 +89,40 @@ export function OrderFormScreen({ route, navigation }: Props) {
       ) : null}
 
       <View style={styles.card}>
-        <Text style={styles.label}>Alan (m²)</Text>
-        <TextInput
-          style={styles.input}
-          value={areaM2}
-          onChangeText={setAreaM2}
-          keyboardType="numeric"
-          placeholder="Örn. 12"
-        />
-        <Text style={styles.label}>Birim Fiyat (₺)</Text>
-        <TextInput
-          style={styles.input}
-          value={unitPrice}
-          onChangeText={setUnitPrice}
-          keyboardType="numeric"
-          placeholder="Örn. 50"
-        />
+        <Text style={styles.label}>Ürün</Text>
+        <View style={styles.chipsRow}>
+          {ITEM_TYPES.map((type) => {
+            const active = selectedType === type;
+            return (
+              <Pressable
+                key={type}
+                onPress={() => setSelectedType(type)}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>{ITEM_TYPE_LABELS[type]}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {selectedType ? (
+          <>
+            <Text style={styles.priceInfo}>
+              Birim fiyat: {unitPrice > 0 ? `${unitPrice.toFixed(2)} ₺ / ${unit}` : "belirlenmemiş"}
+            </Text>
+
+            <Text style={styles.label}>{unit === "m2" ? "Alan (m²)" : "Adet"}</Text>
+            <TextInput
+              style={styles.input}
+              value={quantity}
+              onChangeText={setQuantity}
+              keyboardType="numeric"
+              placeholder={unit === "m2" ? "Örn. 12" : "Örn. 1"}
+            />
+
+            <Text style={styles.total}>Toplam: {total.toFixed(2)} ₺</Text>
+          </>
+        ) : null}
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -114,6 +154,18 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   label: { fontSize: 13, color: "#475569", marginTop: 8 },
+  chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  chip: {
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  chipActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
+  chipText: { color: "#334155", fontSize: 14, fontWeight: "600" },
+  chipTextActive: { color: "#ffffff" },
+  priceInfo: { color: "#64748b", fontSize: 13, marginTop: 8 },
   input: {
     borderWidth: 1,
     borderColor: "#cbd5e1",
@@ -122,6 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#0f172a",
   },
+  total: { fontSize: 16, fontWeight: "700", color: "#0f172a", marginTop: 8 },
   error: { color: "#ef4444", marginTop: 4 },
   buttonWrap: { marginTop: 12 },
 });

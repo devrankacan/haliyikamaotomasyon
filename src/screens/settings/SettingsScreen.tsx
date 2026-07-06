@@ -13,6 +13,7 @@ export function SettingsScreen() {
   const updatePrice = useUpdatePriceEntry();
   const [editingType, setEditingType] = useState<ItemType | null>(null);
   const [draftValue, setDraftValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const rows = ITEM_TYPES.map((itemType) => {
     const entry = priceList?.find((p) => p.itemType === itemType);
@@ -36,15 +37,20 @@ export function SettingsScreen() {
 
   function saveEditing(unit: "m2" | "adet") {
     if (!editingType) return;
+    setError(null);
     updatePrice.mutate(
       { itemType: editingType, unit, unitPrice: Number(draftValue.replace(",", ".")) || 0 },
-      { onSuccess: cancelEditing }
+      {
+        onSuccess: cancelEditing,
+        onError: (err) => setError(err instanceof Error ? err.message : "Fiyat kaydedilemedi."),
+      }
     );
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Fiyat Listesi</Text>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <View style={styles.card}>
         <FlatList
           data={rows}
@@ -94,6 +100,7 @@ export function SettingsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#f1f5f9" },
   sectionTitle: { fontSize: 14, fontWeight: "700", color: "#64748b", marginBottom: 8, textTransform: "uppercase" },
+  error: { color: "#ef4444", marginBottom: 8 },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 14,
