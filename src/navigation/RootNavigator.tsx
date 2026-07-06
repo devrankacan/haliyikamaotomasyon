@@ -12,6 +12,7 @@ import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
 import { CustomerDetailScreen } from "@/screens/customers/CustomerDetailScreen";
 import { CustomerFormScreen } from "@/screens/customers/CustomerFormScreen";
 import { ContactsImportScreen } from "@/screens/customers/ContactsImportScreen";
+import { BulkSmsScreen } from "@/screens/customers/BulkSmsScreen";
 import { OrderListScreen } from "@/screens/orders/OrderListScreen";
 import { OrderCustomerPickerScreen } from "@/screens/orders/OrderCustomerPickerScreen";
 import { OrderDetailScreen } from "@/screens/orders/OrderDetailScreen";
@@ -105,6 +106,11 @@ export function RootNavigator() {
           name="ContactsImport"
           component={ContactsImportScreen}
           options={{ ...screenHeaderOptions, headerShown: true, title: "Rehberden Ekle" }}
+        />
+        <Stack.Screen
+          name="BulkSms"
+          component={BulkSmsScreen}
+          options={{ ...screenHeaderOptions, headerShown: true, title: "Toplu SMS Gönder" }}
         />
         <Stack.Screen
           name="OrderCustomerPicker"

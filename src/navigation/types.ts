@@ -4,6 +4,7 @@ export type RootStackParamList = {
   CustomerDetail: { customerId: string };
   CustomerForm: { customerId?: string };
   ContactsImport: undefined;
+  BulkSms: undefined;
   OrderCustomerPicker: undefined;
   OrderDetail: { orderId: string };
   OrderForm: { customerId: string; orderId?: string };

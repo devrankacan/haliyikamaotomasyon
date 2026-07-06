@@ -131,6 +131,15 @@ export function ContactBookIcon({ size = 22, color = "#0f172a" }: IconProps) {
   );
 }
 
+export function SmsIcon({ size = 22, color = "#0f172a" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x="2" y="4" width="20" height="16" rx="2" stroke={color} strokeWidth={2} {...common} />
+      <Path d="m3 6 9 7 9-7" stroke={color} strokeWidth={2} {...common} />
+    </Svg>
+  );
+}
+
 export function WhatsAppIcon({ size = 22, color = "#ffffff" }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
