@@ -1,12 +1,11 @@
 import type { ReactElement } from "react";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
 import { GridIcon, PackageIcon, SettingsIcon, UsersIcon } from "@/components/icons";
-import { LogoMark } from "@/components/LogoMark";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
 import { DashboardScreen } from "@/screens/dashboard/DashboardScreen";
 import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
@@ -68,7 +67,11 @@ function MainTabs() {
         },
         headerLeft: () => (
           <View style={{ marginLeft: 16 }}>
-            <LogoMark size={30} />
+            <Image
+              source={require("../../assets/logo.png")}
+              style={{ width: 50, height: 28 }}
+              resizeMode="contain"
+            />
           </View>
         ),
       })}

@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
 import { PrimaryButton } from "@/components/PrimaryButton";
-import { LogoMark } from "@/components/LogoMark";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -32,9 +31,8 @@ export function LoginScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <View style={styles.container}>
         <View style={styles.logoWrap}>
-          <LogoMark size={72} />
+          <Image source={require("../../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
         </View>
-        <Text style={styles.title}>Halı Yıkama Otomasyonu</Text>
         <Text style={styles.subtitle}>Devam etmek için giriş yapın</Text>
 
         <TextInput
@@ -69,7 +67,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#ffffff" },
   container: { flex: 1, justifyContent: "center", padding: 24, gap: 12 },
   logoWrap: { alignItems: "center", marginBottom: 8 },
-  title: { fontSize: 22, fontWeight: "700", textAlign: "center", color: "#0f172a" },
+  logo: { width: 220, height: 124 },
   subtitle: { fontSize: 14, color: "#64748b", textAlign: "center", marginBottom: 12 },
   input: {
     borderWidth: 1,
