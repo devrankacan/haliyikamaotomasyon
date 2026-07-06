@@ -137,6 +137,33 @@ as $$
   select company_id from users where id = auth.uid();
 $$;
 
+-- Client, company_id göndermese bile satırı giriş yapan kullanıcının
+-- firmasına otomatik bağlar (customers/orders/price_list insert'lerinde).
+create or replace function set_company_id()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+  if new.company_id is null then
+    new.company_id := current_company_id();
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_customers_set_company_id
+  before insert on customers
+  for each row execute function set_company_id();
+
+create trigger trg_orders_set_company_id
+  before insert on orders
+  for each row execute function set_company_id();
+
+create trigger trg_price_list_set_company_id
+  before insert on price_list
+  for each row execute function set_company_id();
+
 create policy "users_own_company" on users
   for select using (company_id = current_company_id());
 
