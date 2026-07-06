@@ -69,7 +69,7 @@ function MainTabs() {
           <View style={{ marginLeft: 16 }}>
             <Image
               source={require("../../assets/logo.png")}
-              style={{ width: 50, height: 28 }}
+              style={{ width: 108, height: 108 / (586 / 135) }}
               resizeMode="contain"
             />
           </View>

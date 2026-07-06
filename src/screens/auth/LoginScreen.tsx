@@ -89,10 +89,10 @@ export function LoginScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#ffffff" },
   flex: { flex: 1 },
-  container: { flexGrow: 1, justifyContent: "center", padding: 24, gap: 12 },
-  logoWrap: { alignItems: "center", marginBottom: 8 },
-  logo: { width: 220, height: 124 },
-  subtitle: { fontSize: 14, color: "#64748b", textAlign: "center", marginBottom: 12 },
+  container: { flexGrow: 1, justifyContent: "center", padding: 24, gap: 10 },
+  logoWrap: { alignItems: "center" },
+  logo: { width: 240, height: 240 / (586 / 135) },
+  subtitle: { fontSize: 14, color: "#64748b", textAlign: "center", marginBottom: 4 },
   input: {
     borderWidth: 1,
     borderColor: "#cbd5e1",
