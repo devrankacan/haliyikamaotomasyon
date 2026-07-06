@@ -7,7 +7,7 @@ import { useOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { useCustomers } from "@/hooks/useCustomers";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Dropdown, type DropdownOption } from "@/components/Dropdown";
-import { ChatIcon } from "@/components/icons";
+import { WhatsAppIcon } from "@/components/icons";
 import type { Customer, Order, OrderItem } from "@/types/domain";
 import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type OrderStatus } from "@/constants/orderStatus";
@@ -80,7 +80,7 @@ export function OrderDetailScreen({ route }: Props) {
           disabled={!customer}
           style={({ pressed }) => [styles.whatsappButton, pressed && styles.whatsappButtonPressed]}
         >
-          <ChatIcon size={18} color="#ffffff" />
+          <WhatsAppIcon size={18} color="#ffffff" />
           <Text style={styles.whatsappButtonText}>WhatsApp ile Bilgilendir</Text>
         </Pressable>
         {whatsappError ? <Text style={styles.error}>{whatsappError}</Text> : null}
