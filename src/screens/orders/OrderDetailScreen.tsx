@@ -9,7 +9,6 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Dropdown, type DropdownOption } from "@/components/Dropdown";
 import { WhatsAppIcon } from "@/components/icons";
 import type { Customer, Order, OrderItem } from "@/types/domain";
-import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type OrderStatus } from "@/constants/orderStatus";
 import { buildStatusMessage, openWhatsapp } from "@/lib/whatsapp";
 
@@ -47,7 +46,7 @@ export function OrderDetailScreen({ route }: Props) {
   async function handleSendWhatsapp() {
     if (!customer) return;
     setWhatsappError(null);
-    const itemsLabel = Array.from(new Set(order!.items.map((i) => ITEM_TYPE_LABELS[i.itemType]))).join(", ");
+    const itemsLabel = Array.from(new Set(order!.items.map((i) => i.itemType))).join(", ");
     const message = buildStatusMessage(order!.status, customer.name, itemsLabel);
     try {
       await openWhatsapp(customer.phone, message);
@@ -89,7 +88,7 @@ export function OrderDetailScreen({ route }: Props) {
       <Text style={styles.sectionTitle}>Kalemler</Text>
       {order.items.map((item: OrderItem) => (
         <View key={item.id} style={styles.card}>
-          <Text style={styles.itemType}>{ITEM_TYPE_LABELS[item.itemType]}</Text>
+          <Text style={styles.itemType}>{item.itemType}</Text>
           <Text style={styles.detail}>
             {item.quantity} adet · {item.areaM2 ?? "-"} m² · {item.unitPrice.toFixed(2)} ₺
           </Text>

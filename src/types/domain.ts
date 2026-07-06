@@ -36,7 +36,14 @@ export interface Customer {
   createdAt: string;
 }
 
-export type ItemType = "hali" | "kilim" | "koltuk" | "perde" | "diger";
+export type ItemType = string;
+
+export interface ItemTypeEntry {
+  id: string;
+  companyId: string;
+  label: string;
+  unit: "m2" | "adet";
+}
 
 export interface OrderItem {
   id: string;

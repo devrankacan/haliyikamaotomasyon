@@ -6,28 +6,28 @@ import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
 import { useCustomers } from "@/hooks/useCustomers";
 import { usePriceList } from "@/hooks/usePriceList";
-import type { Customer, ItemType } from "@/types/domain";
-import { ITEM_TYPE_DEFAULT_UNIT, ITEM_TYPE_LABELS } from "@/constants/itemTypes";
+import { useItemTypes } from "@/hooks/useItemTypes";
+import type { Customer } from "@/types/domain";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Avatar } from "@/components/Avatar";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderForm">;
 
-const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS) as ItemType[];
-
 export function OrderFormScreen({ route, navigation }: Props) {
   const { customerId } = route.params;
   const { data: customers } = useCustomers();
   const { data: priceList } = usePriceList();
+  const { data: itemTypes } = useItemTypes();
   const customer = customers?.find((c: Customer) => c.id === customerId);
 
-  const [selectedType, setSelectedType] = useState<ItemType | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const selectedTypeEntry = itemTypes?.find((t) => t.label === selectedType);
   const priceEntry = priceList?.find((p) => p.itemType === selectedType);
-  const unit = selectedType ? priceEntry?.unit ?? ITEM_TYPE_DEFAULT_UNIT[selectedType] : null;
+  const unit = selectedType ? priceEntry?.unit ?? selectedTypeEntry?.unit ?? "adet" : null;
   const unitPrice = priceEntry?.unitPrice ?? 0;
   const total = Number(quantity.replace(",", ".")) * unitPrice || 0;
 
@@ -90,20 +90,24 @@ export function OrderFormScreen({ route, navigation }: Props) {
 
       <View style={styles.card}>
         <Text style={styles.label}>Ürün</Text>
-        <View style={styles.chipsRow}>
-          {ITEM_TYPES.map((type) => {
-            const active = selectedType === type;
-            return (
-              <Pressable
-                key={type}
-                onPress={() => setSelectedType(type)}
-                style={[styles.chip, active && styles.chipActive]}
-              >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>{ITEM_TYPE_LABELS[type]}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        {itemTypes && itemTypes.length === 0 ? (
+          <Text style={styles.note}>Henüz ürün eklenmedi. Ayarlar &gt; Fiyat Listesi'nden ürün ekleyin.</Text>
+        ) : (
+          <View style={styles.chipsRow}>
+            {(itemTypes ?? []).map((type) => {
+              const active = selectedType === type.label;
+              return (
+                <Pressable
+                  key={type.id}
+                  onPress={() => setSelectedType(type.label)}
+                  style={[styles.chip, active && styles.chipActive]}
+                >
+                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{type.label}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
 
         {selectedType ? (
           <>
@@ -154,6 +158,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   label: { fontSize: 13, color: "#475569", marginTop: 8 },
+  note: { color: "#64748b", fontSize: 13 },
   chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: {
     borderWidth: 1,

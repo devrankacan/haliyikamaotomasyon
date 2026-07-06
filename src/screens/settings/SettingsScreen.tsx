@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { ITEM_TYPE_DEFAULT_UNIT, ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 import { PencilIcon, TagIcon } from "@/components/icons";
 import { Dropdown, type DropdownOption } from "@/components/Dropdown";
 import { usePriceList, useUpdatePriceEntry } from "@/hooks/usePriceList";
+import { useCreateItemType, useItemTypes } from "@/hooks/useItemTypes";
 import { useSmsSettings, useUpdateSmsSettings } from "@/hooks/useSmsSettings";
-import type { ItemType, SmsProvider } from "@/types/domain";
-
-const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS) as ItemType[];
+import type { SmsProvider } from "@/types/domain";
 
 const PROVIDER_OPTIONS: DropdownOption<SmsProvider>[] = [
   { value: "netgsm", label: "Netgsm" },
@@ -17,12 +15,23 @@ const PROVIDER_OPTIONS: DropdownOption<SmsProvider>[] = [
   { value: "diger", label: "Diğer" },
 ];
 
+const UNIT_OPTIONS: DropdownOption<"m2" | "adet">[] = [
+  { value: "m2", label: "m² (alan bazlı)" },
+  { value: "adet", label: "Adet" },
+];
+
 export function SettingsScreen() {
+  const { data: itemTypes } = useItemTypes();
+  const createItemType = useCreateItemType();
   const { data: priceList } = usePriceList();
   const updatePrice = useUpdatePriceEntry();
-  const [editingType, setEditingType] = useState<ItemType | null>(null);
+  const [editingType, setEditingType] = useState<string | null>(null);
   const [draftValue, setDraftValue] = useState("");
   const [priceError, setPriceError] = useState<string | null>(null);
+
+  const [newLabel, setNewLabel] = useState("");
+  const [newUnit, setNewUnit] = useState<"m2" | "adet">("m2");
+  const [newItemError, setNewItemError] = useState<string | null>(null);
 
   const { data: smsSettings } = useSmsSettings();
   const updateSmsSettings = useUpdateSmsSettings();
@@ -44,17 +53,17 @@ export function SettingsScreen() {
     }
   }, [smsSettings, loadedSmsSettings]);
 
-  const rows = ITEM_TYPES.map((itemType) => {
-    const entry = priceList?.find((p) => p.itemType === itemType);
+  const rows = (itemTypes ?? []).map((type) => {
+    const entry = priceList?.find((p) => p.itemType === type.label);
     return {
-      itemType,
-      label: ITEM_TYPE_LABELS[itemType],
-      unit: entry?.unit ?? ITEM_TYPE_DEFAULT_UNIT[itemType],
+      itemType: type.label,
+      label: type.label,
+      unit: entry?.unit ?? type.unit,
       unitPrice: entry?.unitPrice ?? 0,
     };
   });
 
-  function startEditing(itemType: ItemType, currentPrice: number) {
+  function startEditing(itemType: string, currentPrice: number) {
     setEditingType(itemType);
     setDraftValue(currentPrice > 0 ? String(currentPrice) : "");
   }
@@ -72,6 +81,21 @@ export function SettingsScreen() {
       {
         onSuccess: cancelEditing,
         onError: (err) => setPriceError(err instanceof Error ? err.message : "Fiyat kaydedilemedi."),
+      }
+    );
+  }
+
+  function handleAddItemType() {
+    if (!newLabel.trim()) {
+      setNewItemError("Ürün adı girin.");
+      return;
+    }
+    setNewItemError(null);
+    createItemType.mutate(
+      { label: newLabel.trim(), unit: newUnit },
+      {
+        onSuccess: () => setNewLabel(""),
+        onError: (err) => setNewItemError(err instanceof Error ? err.message : "Ürün eklenemedi."),
       }
     );
   }
@@ -137,6 +161,31 @@ export function SettingsScreen() {
             </View>
           );
         })}
+
+        {rows.length === 0 ? <Text style={styles.note}>Henüz ürün eklenmedi.</Text> : null}
+
+        <View style={styles.separator} />
+        <View style={styles.addItemRow}>
+          <TextInput
+            style={[styles.input2, styles.addItemInput]}
+            value={newLabel}
+            onChangeText={setNewLabel}
+            placeholder="Yeni ürün adı (örn. Battaniye)"
+          />
+          <View style={styles.addItemUnit}>
+            <Dropdown value={newUnit} options={UNIT_OPTIONS} onChange={setNewUnit} />
+          </View>
+        </View>
+        {newItemError ? <Text style={styles.error}>{newItemError}</Text> : null}
+        <Pressable
+          style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
+          onPress={handleAddItemType}
+          disabled={createItemType.isPending}
+        >
+          <Text style={styles.addButtonText}>
+            {createItemType.isPending ? "Ekleniyor…" : "+ Yeni Ürün Ekle"}
+          </Text>
+        </Pressable>
       </View>
 
       <Text style={styles.sectionTitle}>SMS Sağlayıcı Ayarları</Text>
@@ -255,6 +304,19 @@ const styles = StyleSheet.create({
   saveText: { color: "#2563eb", fontWeight: "700", fontSize: 13 },
   cancelText: { color: "#94a3b8", fontSize: 13 },
   note: { color: "#64748b", fontSize: 13, paddingVertical: 12, lineHeight: 18 },
+  addItemRow: { gap: 8, marginTop: 12 },
+  addItemInput: {},
+  addItemUnit: {},
+  addButton: {
+    backgroundColor: "#eff6ff",
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 12,
+  },
+  addButtonPressed: { opacity: 0.7 },
+  addButtonText: { color: "#2563eb", fontWeight: "700", fontSize: 14 },
   fieldLabel: { fontSize: 13, color: "#475569", marginTop: 10, marginBottom: 4 },
   input2: {
     borderWidth: 1,

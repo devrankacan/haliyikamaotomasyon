@@ -5,7 +5,6 @@
 create extension if not exists "uuid-ossp";
 
 create type user_role as enum ('admin', 'operator', 'accountant');
-create type item_type as enum ('hali', 'kilim', 'koltuk', 'perde', 'diger');
 create type order_status as enum (
   'talep_alindi', 'alim_planlandi', 'alindi', 'yikaniyor',
   'kurutuluyor', 'teslime_hazir', 'teslimat_planlandi',
@@ -51,10 +50,21 @@ create table customer_addresses (
   lng double precision
 );
 
+-- Firma bazlı özelleştirilebilir ürün tipleri (Halı, Kilim, ... veya
+-- kullanıcının eklediği herhangi bir ürün adı).
+create table item_types (
+  id uuid primary key default uuid_generate_v4(),
+  company_id uuid not null references companies(id) on delete cascade,
+  label text not null,
+  unit text not null check (unit in ('m2', 'adet')),
+  created_at timestamptz not null default now(),
+  unique (company_id, label)
+);
+
 create table price_list (
   id uuid primary key default uuid_generate_v4(),
   company_id uuid not null references companies(id) on delete cascade,
-  item_type item_type not null,
+  item_type text not null,
   unit text not null check (unit in ('m2', 'adet')),
   unit_price numeric(10, 2) not null,
   unique (company_id, item_type)
@@ -79,7 +89,7 @@ create table orders (
 create table order_items (
   id uuid primary key default uuid_generate_v4(),
   order_id uuid not null references orders(id) on delete cascade,
-  item_type item_type not null,
+  item_type text not null,
   description text,
   width_m numeric(6, 2),
   height_m numeric(6, 2),
@@ -135,6 +145,7 @@ alter table companies enable row level security;
 alter table users enable row level security;
 alter table customers enable row level security;
 alter table customer_addresses enable row level security;
+alter table item_types enable row level security;
 alter table price_list enable row level security;
 alter table orders enable row level security;
 alter table order_items enable row level security;
@@ -175,6 +186,10 @@ create trigger trg_orders_set_company_id
   before insert on orders
   for each row execute function set_company_id();
 
+create trigger trg_item_types_set_company_id
+  before insert on item_types
+  for each row execute function set_company_id();
+
 create trigger trg_price_list_set_company_id
   before insert on price_list
   for each row execute function set_company_id();
@@ -197,6 +212,10 @@ create policy "customer_addresses_via_customer" on customer_addresses
   with check (
     customer_id in (select id from customers where company_id = current_company_id())
   );
+
+create policy "item_types_company_isolation" on item_types
+  for all using (company_id = current_company_id())
+  with check (company_id = current_company_id());
 
 create policy "price_list_company_isolation" on price_list
   for all using (company_id = current_company_id())
