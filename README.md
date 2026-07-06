@@ -13,6 +13,19 @@ cp .env.example .env   # Supabase URL ve anon key'i doldurun
 npx expo start
 ```
 
+## Önizleme
+
+Bu bir mobil (React Native) uygulama olduğu için gerçek/etkileşimli önizleme kendi
+bilgisayarınızda çalıştırılır — bulut ortamı telefonunuza ağ üzerinden bağlanamaz:
+
+- **Telefonda (önerilen):** `npx expo start` çalıştırın, açılan QR kodu telefonunuza
+  kurduğunuz [Expo Go](https://expo.dev/go) uygulamasıyla okutun.
+- **Simülatör/emülatörde:** `npm run ios` (Mac + Xcode) veya `npm run android`
+  (Android Studio) çalıştırın.
+- **Tarayıcıda (hızlı bakış için):** `npm run web` — `react-native-web` sayesinde
+  ekranların çoğu tarayıcıda da açılır (kamera, native navigasyon geçişleri gibi bazı
+  özellikler burada çalışmaz).
+
 ## Supabase Kurulumu
 
 1. [supabase.com](https://supabase.com) üzerinde yeni bir proje oluşturun.
