@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
-import { GridIcon, PackageIcon, SettingsIcon, UsersIcon } from "@/components/icons";
+import { GridIcon, PackageIcon, SettingsIcon, SmsIcon, UsersIcon } from "@/components/icons";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
 import { DashboardScreen } from "@/screens/dashboard/DashboardScreen";
 import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
@@ -45,6 +45,7 @@ const TAB_ICONS: Record<keyof MainTabsParamList, (props: { size: number; color: 
   Dashboard: ({ size, color }) => <GridIcon size={size} color={color} />,
   Customers: ({ size, color }) => <UsersIcon size={size} color={color} />,
   Orders: ({ size, color }) => <PackageIcon size={size} color={color} />,
+  Sms: ({ size, color }) => <SmsIcon size={size} color={color} />,
   Settings: ({ size, color }) => <SettingsIcon size={size} color={color} />,
 };
 
@@ -80,6 +81,7 @@ function MainTabs() {
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Özet" }} />
       <Tab.Screen name="Customers" component={CustomerListScreen} options={{ title: "Müşteriler" }} />
       <Tab.Screen name="Orders" component={OrderListScreen} options={{ title: "Siparişler" }} />
+      <Tab.Screen name="Sms" component={BulkSmsScreen} options={{ title: "SMS" }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: "Ayarlar" }} />
     </Tab.Navigator>
   );
@@ -106,11 +108,6 @@ export function RootNavigator() {
           name="ContactsImport"
           component={ContactsImportScreen}
           options={{ ...screenHeaderOptions, headerShown: true, title: "Rehberden Ekle" }}
-        />
-        <Stack.Screen
-          name="BulkSms"
-          component={BulkSmsScreen}
-          options={{ ...screenHeaderOptions, headerShown: true, title: "Toplu SMS Gönder" }}
         />
         <Stack.Screen
           name="OrderCustomerPicker"

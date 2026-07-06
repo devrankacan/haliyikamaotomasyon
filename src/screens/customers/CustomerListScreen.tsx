@@ -10,7 +10,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { Avatar } from "@/components/Avatar";
 import { AlphabetIndex } from "@/components/AlphabetIndex";
-import { ContactBookIcon, PersonIcon, SmsIcon } from "@/components/icons";
+import { ContactBookIcon, PersonIcon } from "@/components/icons";
 import type { Customer } from "@/types/domain";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Customers">;
@@ -48,14 +48,7 @@ export function CustomerListScreen(_props: Props) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <View style={styles.headerButtons}>
-          <Pressable onPress={() => navigation.navigate("BulkSms")} hitSlop={10} style={styles.smsButton}>
-            <SmsIcon size={18} color="#2563eb" />
-          </Pressable>
-          <HeaderAddButton onPress={() => setChooserOpen(true)} />
-        </View>
-      ),
+      headerRight: () => <HeaderAddButton onPress={() => setChooserOpen(true)} />,
     });
   }, [navigation]);
 
@@ -211,8 +204,6 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
   phone: { color: "#64748b", marginTop: 2 },
   chevron: { color: "#cbd5e1", fontSize: 22 },
-  headerButtons: { flexDirection: "row", alignItems: "center", gap: 14, marginRight: 4 },
-  smsButton: { padding: 4 },
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(15, 23, 42, 0.4)",
