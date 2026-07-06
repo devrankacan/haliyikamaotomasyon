@@ -1,23 +1,25 @@
+import type { ReactElement } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { useOrders } from "@/hooks/useOrders";
 import type { Order } from "@/types/domain";
+import { CashIcon, PackageIcon, TruckIcon } from "@/components/icons";
 
 function SummaryCard({
   label,
   value,
-  icon,
+  Icon,
   color,
 }: {
   label: string;
   value: string;
-  icon: string;
+  Icon: (props: { size?: number; color?: string }) => ReactElement;
   color: string;
 }) {
   return (
     <View style={styles.card}>
       <View style={[styles.iconWrap, { backgroundColor: `${color}1a` }]}>
-        <Text style={styles.iconText}>{icon}</Text>
+        <Icon size={18} color={color} />
       </View>
       <Text style={styles.cardValue}>{value}</Text>
       <Text style={styles.cardLabel}>{label}</Text>
@@ -41,12 +43,12 @@ export function DashboardScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <Text style={styles.title}>Özet</Text>
       <View style={styles.row}>
-        <SummaryCard label="Devam Eden Sipariş" value={String(openOrders.length)} icon="📦" color="#2563eb" />
-        <SummaryCard label="Bekleyen Tahsilat" value={String(pendingPayment.length)} icon="💰" color="#d97706" />
+        <SummaryCard label="Devam Eden Sipariş" value={String(openOrders.length)} Icon={PackageIcon} color="#2563eb" />
+        <SummaryCard label="Bekleyen Tahsilat" value={String(pendingPayment.length)} Icon={CashIcon} color="#d97706" />
         <SummaryCard
           label="Bugünkü Teslimat"
           value={String(todayDeliveries.length)}
-          icon="🚚"
+          Icon={TruckIcon}
           color="#16a34a"
         />
       </View>
@@ -80,7 +82,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 10,
   },
-  iconText: { fontSize: 16 },
   cardValue: { fontSize: 26, fontWeight: "700", color: "#0f172a" },
   cardLabel: { color: "#64748b", marginTop: 4, fontSize: 13 },
 });

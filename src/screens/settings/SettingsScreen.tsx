@@ -1,6 +1,7 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
+import { TagIcon } from "@/components/icons";
 
 // TODO(Faz 2): Supabase price_list tablosundan oku/yaz; şimdilik yapı gösterimi.
 const PLACEHOLDER_PRICE_LIST = Object.entries(ITEM_TYPE_LABELS).map(([itemType, label]) => ({
@@ -21,7 +22,7 @@ export function SettingsScreen() {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <View style={styles.rowLeft}>
-                <Text style={styles.tagIcon}>🏷️</Text>
+                <TagIcon size={16} color="#2563eb" />
                 <Text style={styles.label}>{item.label}</Text>
               </View>
               <Text style={styles.price}>{item.unitPrice.toFixed(2)} ₺</Text>
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   rowLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  tagIcon: { fontSize: 15 },
   separator: { height: StyleSheet.hairlineWidth, backgroundColor: "#e2e8f0" },
   label: { fontSize: 15, color: "#0f172a" },
   price: { fontSize: 15, fontWeight: "600", color: "#0f172a" },

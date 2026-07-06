@@ -1,9 +1,10 @@
-import { Text } from "react-native";
+import type { ReactElement } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import type { MainTabsParamList, RootStackParamList } from "@/navigation/types";
+import { GridIcon, PackageIcon, SettingsIcon, UsersIcon } from "@/components/icons";
 import { LoginScreen } from "@/screens/auth/LoginScreen";
 import { DashboardScreen } from "@/screens/dashboard/DashboardScreen";
 import { CustomerListScreen } from "@/screens/customers/CustomerListScreen";
@@ -37,11 +38,11 @@ const screenHeaderOptions = {
   headerShadowVisible: false,
 };
 
-const TAB_ICONS: Record<keyof MainTabsParamList, string> = {
-  Dashboard: "📊",
-  Customers: "👥",
-  Orders: "📦",
-  Settings: "⚙️",
+const TAB_ICONS: Record<keyof MainTabsParamList, (props: { size: number; color: string }) => ReactElement> = {
+  Dashboard: ({ size, color }) => <GridIcon size={size} color={color} />,
+  Customers: ({ size, color }) => <UsersIcon size={size} color={color} />,
+  Orders: ({ size, color }) => <PackageIcon size={size} color={color} />,
+  Settings: ({ size, color }) => <SettingsIcon size={size} color={color} />,
 };
 
 function MainTabs() {
@@ -58,9 +59,10 @@ function MainTabs() {
           paddingBottom: 8,
           borderTopColor: "#e2e8f0",
         },
-        tabBarIcon: ({ focused }) => (
-          <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{TAB_ICONS[route.name]}</Text>
-        ),
+        tabBarIcon: ({ color, size }) => {
+          const IconComponent = TAB_ICONS[route.name];
+          return <IconComponent size={size} color={color} />;
+        },
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Özet" }} />
