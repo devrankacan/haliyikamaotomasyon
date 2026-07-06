@@ -6,13 +6,20 @@ import type { RootStackParamList } from "@/navigation/types";
 import { useOrders, useUpdateOrderStatus } from "@/hooks/useOrders";
 import { useCustomers } from "@/hooks/useCustomers";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Dropdown, type DropdownOption } from "@/components/Dropdown";
+import { ChatIcon } from "@/components/icons";
 import type { Customer, Order, OrderItem } from "@/types/domain";
 import { ITEM_TYPE_LABELS } from "@/constants/itemTypes";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type OrderStatus } from "@/constants/orderStatus";
+import { buildStatusMessage, openWhatsapp } from "@/lib/whatsapp";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderDetail">;
 
-const FLOW_STATUSES = ORDER_STATUSES.filter((s) => s !== "iptal_edildi");
+const STATUS_OPTIONS: DropdownOption<OrderStatus>[] = ORDER_STATUSES.map((status) => ({
+  value: status,
+  label: ORDER_STATUS_LABELS[status],
+  danger: status === "iptal_edildi",
+}));
 
 export function OrderDetailScreen({ route }: Props) {
   const { orderId } = route.params;
@@ -20,6 +27,7 @@ export function OrderDetailScreen({ route }: Props) {
   const { data: customers } = useCustomers();
   const updateStatus = useUpdateOrderStatus();
   const [error, setError] = useState<string | null>(null);
+  const [whatsappError, setWhatsappError] = useState<string | null>(null);
   const order = orders?.find((o: Order) => o.id === orderId);
   const customer = customers?.find((c: Customer) => c.id === order?.customerId);
 
@@ -34,6 +42,18 @@ export function OrderDetailScreen({ route }: Props) {
       { orderId, status },
       { onError: (err) => setError(err instanceof Error ? err.message : "Durum güncellenemedi.") }
     );
+  }
+
+  async function handleSendWhatsapp() {
+    if (!customer) return;
+    setWhatsappError(null);
+    const itemsLabel = Array.from(new Set(order!.items.map((i) => ITEM_TYPE_LABELS[i.itemType]))).join(", ");
+    const message = buildStatusMessage(order!.status, customer.name, itemsLabel);
+    try {
+      await openWhatsapp(customer.phone, message);
+    } catch {
+      setWhatsappError("WhatsApp açılamadı. Telefon numarasını kontrol edin.");
+    }
   }
 
   return (
@@ -52,33 +72,18 @@ export function OrderDetailScreen({ route }: Props) {
 
       <Text style={styles.sectionTitle}>Durumu Güncelle</Text>
       <View style={styles.card}>
-        <View style={styles.chipsRow}>
-          {FLOW_STATUSES.map((status) => {
-            const active = order.status === status;
-            return (
-              <Pressable
-                key={status}
-                onPress={() => handleStatusChange(status)}
-                disabled={updateStatus.isPending}
-                style={[styles.chip, active && styles.chipActive]}
-              >
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>
-                  {ORDER_STATUS_LABELS[status]}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Pressable
-          onPress={() => handleStatusChange("iptal_edildi")}
-          disabled={updateStatus.isPending}
-          style={styles.cancelRow}
-        >
-          <Text style={[styles.cancelText, order.status === "iptal_edildi" && styles.cancelTextActive]}>
-            {order.status === "iptal_edildi" ? "İptal Edildi ✓" : "Siparişi İptal Et"}
-          </Text>
-        </Pressable>
+        <Dropdown value={order.status} options={STATUS_OPTIONS} onChange={handleStatusChange} />
         {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Pressable
+          onPress={handleSendWhatsapp}
+          disabled={!customer}
+          style={({ pressed }) => [styles.whatsappButton, pressed && styles.whatsappButtonPressed]}
+        >
+          <ChatIcon size={18} color="#ffffff" />
+          <Text style={styles.whatsappButtonText}>WhatsApp ile Bilgilendir</Text>
+        </Pressable>
+        {whatsappError ? <Text style={styles.error}>{whatsappError}</Text> : null}
       </View>
 
       <Text style={styles.sectionTitle}>Kalemler</Text>
@@ -114,20 +119,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
-  chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  chip: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+  whatsappButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#25D366",
+    borderRadius: 10,
+    paddingVertical: 12,
+    marginTop: 12,
   },
-  chipActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  chipText: { color: "#334155", fontSize: 13, fontWeight: "600" },
-  chipTextActive: { color: "#ffffff" },
-  cancelRow: { marginTop: 12, alignSelf: "flex-start" },
-  cancelText: { color: "#ef4444", fontSize: 13, fontWeight: "600" },
-  cancelTextActive: { color: "#94a3b8" },
+  whatsappButtonPressed: { opacity: 0.8 },
+  whatsappButtonText: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
   itemType: { fontWeight: "600", color: "#0f172a" },
   detail: { color: "#334155", fontSize: 14 },
   error: { color: "#ef4444", marginTop: 8 },

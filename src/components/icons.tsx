@@ -92,3 +92,16 @@ export function TruckIcon({ size = 22, color = "#0f172a" }: IconProps) {
     </Svg>
   );
 }
+
+export function ChatIcon({ size = 22, color = "#0f172a" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M21 11.5a8.38 8.38 0 0 1-4.9 7.6 8.5 8.5 0 0 1-9.1-1.05L3 21l1.95-4.5A8.38 8.38 0 0 1 3.5 12.5 8.5 8.5 0 0 1 12 4a8.5 8.5 0 0 1 9 7.5Z"
+        stroke={color}
+        strokeWidth={2}
+        {...common}
+      />
+    </Svg>
+  );
+}
