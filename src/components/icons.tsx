@@ -140,6 +140,19 @@ export function SmsIcon({ size = 22, color = "#0f172a" }: IconProps) {
   );
 }
 
+export function PencilIcon({ size = 22, color = "#0f172a" }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"
+        stroke={color}
+        strokeWidth={2}
+        {...common}
+      />
+    </Svg>
+  );
+}
+
 export function WhatsAppIcon({ size = 22, color = "#ffffff" }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

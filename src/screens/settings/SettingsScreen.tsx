@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { ITEM_TYPE_DEFAULT_UNIT, ITEM_TYPE_LABELS } from "@/constants/itemTypes";
-import { TagIcon } from "@/components/icons";
+import { PencilIcon, TagIcon } from "@/components/icons";
 import { Dropdown, type DropdownOption } from "@/components/Dropdown";
 import { usePriceList, useUpdatePriceEntry } from "@/hooks/usePriceList";
 import { useSmsSettings, useUpdateSmsSettings } from "@/hooks/useSmsSettings";
@@ -123,8 +123,14 @@ export function SettingsScreen() {
                     </Pressable>
                   </View>
                 ) : (
-                  <Pressable onPress={() => startEditing(item.itemType, item.unitPrice)} hitSlop={8}>
+                  <Pressable
+                    style={({ pressed }) => [styles.editButton, pressed && styles.editButtonPressed]}
+                    onPress={() => startEditing(item.itemType, item.unitPrice)}
+                    hitSlop={8}
+                  >
                     <Text style={styles.price}>{item.unitPrice.toFixed(2)} ₺</Text>
+                    <PencilIcon size={14} color="#2563eb" />
+                    <Text style={styles.editButtonText}>Düzenle</Text>
                   </Pressable>
                 )}
               </View>
@@ -224,6 +230,17 @@ const styles = StyleSheet.create({
   label: { fontSize: 15, color: "#0f172a" },
   unit: { fontSize: 13, color: "#94a3b8" },
   price: { fontSize: 15, fontWeight: "600", color: "#2563eb" },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#eff6ff",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  editButtonPressed: { opacity: 0.7 },
+  editButtonText: { color: "#2563eb", fontWeight: "700", fontSize: 13 },
   editRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   input: {
     borderWidth: 1,
