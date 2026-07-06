@@ -1,4 +1,4 @@
-# Halı Yıkama Otomasyonu — Ürün Omurgası
+# Halı Yıkama Otomasyonu — Ürün İskeleti
 
 ## 1. Amaç
 
@@ -10,7 +10,7 @@ yönetici gelir/gider ve iş yükünü tek ekrandan izler.
 Araştırma (Kover, Dehapos, UstaPOS, Haliyikamam gibi yerli otomasyonlar ve Jobber,
 Housecall Pro gibi küresel saha hizmeti CRM'leri) ortak bir çekirdek gösteriyor:
 müşteri/adres kaydı, sipariş durum hattı, otomatik durum bildirimi, m²/adet bazlı
-fiyatlandırma, tahsilat takibi, temel raporlama. Bu omurga o çekirdek üzerine kurulu.
+fiyatlandırma, tahsilat takibi, temel raporlama. Bu iskelet o çekirdek üzerine kurulu.
 
 ## 2. Kapsam Dışı (şimdilik)
 

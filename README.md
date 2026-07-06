@@ -3,7 +3,7 @@
 Halı yıkama firmalarının müşteri, sipariş, teslimat ve tahsilat süreçlerini yönettiği
 mobil uygulama (React Native + Expo + TypeScript, Supabase backend).
 
-Ürün omurgası, veri modeli ve yol haritası için bkz. [`docs/omurga.md`](docs/omurga.md).
+Ürün iskeleti, veri modeli ve yol haritası için bkz. [`docs/iskelet.md`](docs/iskelet.md).
 
 ## Kurulum
 
