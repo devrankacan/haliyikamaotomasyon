@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -29,43 +38,58 @@ export function LoginScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <View style={styles.container}>
-        <View style={styles.logoWrap}>
-          <Image source={require("../../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
-        </View>
-        <Text style={styles.subtitle}>Devam etmek için giriş yapın</Text>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoWrap}>
+            <Image source={require("../../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+          </View>
+          <Text style={styles.subtitle}>Devam etmek için giriş yapın</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="E-posta"
-          placeholderTextColor="#94a3b8"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Şifre"
-          placeholderTextColor="#94a3b8"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="E-posta"
+            placeholderTextColor="#94a3b8"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Şifre"
+            placeholderTextColor="#94a3b8"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <View style={styles.buttonWrap}>
-          <PrimaryButton title={signingIn ? "Giriş yapılıyor…" : "Giriş Yap"} onPress={handleLogin} disabled={signingIn} />
-        </View>
-      </View>
+          <View style={styles.buttonWrap}>
+            <PrimaryButton
+              title={signingIn ? "Giriş yapılıyor…" : "Giriş Yap"}
+              onPress={handleLogin}
+              disabled={signingIn}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#ffffff" },
-  container: { flex: 1, justifyContent: "center", padding: 24, gap: 12 },
+  flex: { flex: 1 },
+  container: { flexGrow: 1, justifyContent: "center", padding: 24, gap: 12 },
   logoWrap: { alignItems: "center", marginBottom: 8 },
   logo: { width: 220, height: 124 },
   subtitle: { fontSize: 14, color: "#64748b", textAlign: "center", marginBottom: 12 },
