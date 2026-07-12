@@ -6,10 +6,15 @@ import type { RootStackParamList } from "@/navigation/types";
 import { supabase } from "@/lib/supabase";
 import { useCustomers } from "@/hooks/useCustomers";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CustomerForm">;
 
 export function CustomerFormScreen({ navigation, route }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { customerId } = route.params ?? {};
   const isEditing = Boolean(customerId);
   const { data: customers } = useCustomers();
@@ -103,7 +108,13 @@ export function CustomerFormScreen({ navigation, route }: Props) {
     <View style={styles.screen}>
       <View style={styles.card}>
         <Text style={styles.label}>Ad Soyad</Text>
-        <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Örn. Ahmet Yılmaz" />
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="Örn. Ahmet Yılmaz"
+          placeholderTextColor={colors.textFaint}
+        />
         <Text style={styles.label}>Telefon</Text>
         <TextInput
           style={styles.input}
@@ -111,6 +122,7 @@ export function CustomerFormScreen({ navigation, route }: Props) {
           onChangeText={setPhone}
           keyboardType="phone-pad"
           placeholder="Örn. 0532 000 00 00"
+          placeholderTextColor={colors.textFaint}
         />
         <Text style={styles.label}>Adres (opsiyonel)</Text>
         <TextInput
@@ -119,6 +131,7 @@ export function CustomerFormScreen({ navigation, route }: Props) {
           onChangeText={setAddressText}
           multiline
           placeholder="Ev veya işyeri adresi"
+          placeholderTextColor={colors.textFaint}
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -135,29 +148,30 @@ export function CustomerFormScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9", padding: 16 },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    gap: 8,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  label: { fontSize: 13, color: "#475569", marginTop: 8 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  multiline: { minHeight: 80, textAlignVertical: "top" },
-  error: { color: "#ef4444", marginTop: 4 },
-  buttonWrap: { marginTop: 12 },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background, padding: 16 },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      gap: 8,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    label: { fontSize: 13, color: colors.textSecondary, marginTop: 8 },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 15,
+      color: colors.text,
+    },
+    multiline: { minHeight: 80, textAlignVertical: "top" },
+    error: { color: colors.error, marginTop: 4 },
+    buttonWrap: { marginTop: 12 },
+  });

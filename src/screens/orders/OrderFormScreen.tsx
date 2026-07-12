@@ -10,10 +10,15 @@ import { useItemTypes } from "@/hooks/useItemTypes";
 import type { Customer } from "@/types/domain";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Avatar } from "@/components/Avatar";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderForm">;
 
 export function OrderFormScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { customerId } = route.params;
   const { data: customers } = useCustomers();
   const { data: priceList } = usePriceList();
@@ -122,6 +127,7 @@ export function OrderFormScreen({ route, navigation }: Props) {
               onChangeText={setQuantity}
               keyboardType="numeric"
               placeholder={unit === "m2" ? "Örn. 12" : "Örn. 1"}
+              placeholderTextColor={colors.textFaint}
             />
 
             <Text style={styles.total}>Toplam: {total.toFixed(2)} ₺</Text>
@@ -142,44 +148,45 @@ export function OrderFormScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9", padding: 16, gap: 16 },
-  customerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  customerName: { fontSize: 17, fontWeight: "700", color: "#0f172a" },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    gap: 8,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  label: { fontSize: 13, color: "#475569", marginTop: 8 },
-  note: { color: "#64748b", fontSize: 13 },
-  chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  chip: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-  },
-  chipActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  chipText: { color: "#334155", fontSize: 14, fontWeight: "600" },
-  chipTextActive: { color: "#ffffff" },
-  priceInfo: { color: "#64748b", fontSize: 13, marginTop: 8 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  total: { fontSize: 16, fontWeight: "700", color: "#0f172a", marginTop: 8 },
-  error: { color: "#ef4444", marginTop: 4 },
-  buttonWrap: { marginTop: 12 },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background, padding: 16, gap: 16 },
+    customerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+    customerName: { fontSize: 17, fontWeight: "700", color: colors.text },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      gap: 8,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    label: { fontSize: 13, color: colors.textSecondary, marginTop: 8 },
+    note: { color: colors.textMuted, fontSize: 13 },
+    chipsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+    chip: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 999,
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+    },
+    chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+    chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: "600" },
+    chipTextActive: { color: "#ffffff" },
+    priceInfo: { color: colors.textMuted, fontSize: 13, marginTop: 8 },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 15,
+      color: colors.text,
+    },
+    total: { fontSize: 16, fontWeight: "700", color: colors.text, marginTop: 8 },
+    error: { color: colors.error, marginTop: 4 },
+    buttonWrap: { marginTop: 12 },
+  });

@@ -4,6 +4,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useOrders } from "@/hooks/useOrders";
 import type { Order } from "@/types/domain";
 import { CashIcon, PackageIcon, TruckIcon } from "@/components/icons";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 function SummaryCard({
   label,
@@ -16,6 +18,7 @@ function SummaryCard({
   Icon: (props: { size?: number; color?: string }) => ReactElement;
   color: string;
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.card}>
       <View style={[styles.iconWrap, { backgroundColor: `${color}1a` }]}>
@@ -28,6 +31,7 @@ function SummaryCard({
 }
 
 export function DashboardScreen() {
+  const styles = useThemedStyles(createStyles);
   const { data: orders } = useOrders();
 
   const openOrders = (orders ?? []).filter((o: Order) => o.status !== "teslim_edildi" && o.status !== "iptal_edildi");
@@ -57,31 +61,32 @@ export function DashboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { backgroundColor: "#f1f5f9" },
-  container: { padding: 16, gap: 16 },
-  title: { fontSize: 22, fontWeight: "700", color: "#0f172a" },
-  row: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
-  card: {
-    flexGrow: 1,
-    minWidth: 140,
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-  },
-  cardValue: { fontSize: 26, fontWeight: "700", color: "#0f172a" },
-  cardLabel: { color: "#64748b", marginTop: 4, fontSize: 13 },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { backgroundColor: colors.background },
+    container: { padding: 16, gap: 16 },
+    title: { fontSize: 22, fontWeight: "700", color: colors.text },
+    row: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
+    card: {
+      flexGrow: 1,
+      minWidth: 140,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    iconWrap: {
+      width: 36,
+      height: 36,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 10,
+    },
+    cardValue: { fontSize: 26, fontWeight: "700", color: colors.text },
+    cardLabel: { color: colors.textMuted, marginTop: 4, fontSize: 13 },
+  });

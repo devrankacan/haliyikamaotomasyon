@@ -12,6 +12,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { HeaderAddButton } from "@/components/HeaderAddButton";
 import { Avatar } from "@/components/Avatar";
 import type { Customer, Order } from "@/types/domain";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Orders">;
 
@@ -22,6 +24,7 @@ function isCompleted(order: Order) {
 }
 
 export function OrderListScreen(_props: Props) {
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: orders, isLoading } = useOrders();
   const { data: customers } = useCustomers();
@@ -98,50 +101,51 @@ export function OrderListScreen(_props: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9" },
-  segmentWrap: {
-    flexDirection: "row",
-    margin: 16,
-    marginBottom: 8,
-    backgroundColor: "#e2e8f0",
-    borderRadius: 12,
-    padding: 4,
-    gap: 4,
-  },
-  segment: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: 9,
-    alignItems: "center",
-  },
-  segmentActive: {
-    backgroundColor: "#ffffff",
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
-  },
-  segmentText: { color: "#64748b", fontWeight: "600", fontSize: 14 },
-  segmentTextActive: { color: "#0f172a" },
-  list: { padding: 16, paddingTop: 4, gap: 10 },
-  row: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  rowPressed: { opacity: 0.6 },
-  info: { flex: 1, gap: 4 },
-  rowHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  customerName: { fontWeight: "600", color: "#0f172a", fontSize: 15 },
-  amount: { color: "#475569" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    segmentWrap: {
+      flexDirection: "row",
+      margin: 16,
+      marginBottom: 8,
+      backgroundColor: colors.border,
+      borderRadius: 12,
+      padding: 4,
+      gap: 4,
+    },
+    segment: {
+      flex: 1,
+      paddingVertical: 8,
+      borderRadius: 9,
+      alignItems: "center",
+    },
+    segmentActive: {
+      backgroundColor: colors.surface,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 1 },
+      elevation: 1,
+    },
+    segmentText: { color: colors.textMuted, fontWeight: "600", fontSize: 14 },
+    segmentTextActive: { color: colors.text },
+    list: { padding: 16, paddingTop: 4, gap: 10 },
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    rowPressed: { opacity: 0.6 },
+    info: { flex: 1, gap: 4 },
+    rowHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    customerName: { fontWeight: "600", color: colors.text, fontSize: 15 },
+    amount: { color: colors.textSecondary },
+  });

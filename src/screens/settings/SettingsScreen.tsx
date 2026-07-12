@@ -7,6 +7,9 @@ import { usePriceList, useUpdatePriceEntry } from "@/hooks/usePriceList";
 import { useCreateItemType, useItemTypes } from "@/hooks/useItemTypes";
 import { useSmsSettings, useUpdateSmsSettings } from "@/hooks/useSmsSettings";
 import type { SmsProvider } from "@/types/domain";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 const PROVIDER_OPTIONS: DropdownOption<SmsProvider>[] = [
   { value: "netgsm", label: "Netgsm" },
@@ -21,6 +24,8 @@ const UNIT_OPTIONS: DropdownOption<"m2" | "adet">[] = [
 ];
 
 export function SettingsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: itemTypes } = useItemTypes();
   const createItemType = useCreateItemType();
   const { data: priceList } = usePriceList();
@@ -124,7 +129,7 @@ export function SettingsScreen() {
               {index > 0 ? <View style={styles.separator} /> : null}
               <View style={styles.row}>
                 <View style={styles.rowLeft}>
-                  <TagIcon size={16} color="#2563eb" />
+                  <TagIcon size={16} color={colors.primary} />
                   <Text style={styles.label}>{item.label}</Text>
                   <Text style={styles.unit}>/{item.unit}</Text>
                 </View>
@@ -137,6 +142,7 @@ export function SettingsScreen() {
                       onChangeText={setDraftValue}
                       keyboardType="numeric"
                       placeholder="0"
+                      placeholderTextColor={colors.textFaint}
                       autoFocus
                     />
                     <Pressable onPress={() => saveEditing(item.unit)} hitSlop={8}>
@@ -153,7 +159,7 @@ export function SettingsScreen() {
                     hitSlop={8}
                   >
                     <Text style={styles.price}>{item.unitPrice.toFixed(2)} ₺</Text>
-                    <PencilIcon size={14} color="#2563eb" />
+                    <PencilIcon size={14} color={colors.primary} />
                     <Text style={styles.editButtonText}>Düzenle</Text>
                   </Pressable>
                 )}
@@ -171,6 +177,7 @@ export function SettingsScreen() {
             value={newLabel}
             onChangeText={setNewLabel}
             placeholder="Yeni ürün adı (örn. Battaniye)"
+            placeholderTextColor={colors.textFaint}
           />
           <View style={styles.addItemUnit}>
             <Dropdown value={newUnit} options={UNIT_OPTIONS} onChange={setNewUnit} />
@@ -204,6 +211,7 @@ export function SettingsScreen() {
           value={apiKey}
           onChangeText={setApiKey}
           placeholder="Örn. kullanıcı adınız ya da API key"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
         />
 
@@ -213,6 +221,7 @@ export function SettingsScreen() {
           value={apiSecret}
           onChangeText={setApiSecret}
           placeholder="API şifresi / secret key"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
           secureTextEntry
         />
@@ -223,6 +232,7 @@ export function SettingsScreen() {
           value={senderId}
           onChangeText={setSenderId}
           placeholder="Örn. firma adınız"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
         />
 
@@ -243,97 +253,98 @@ export function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { backgroundColor: "#f1f5f9" },
-  container: { padding: 16, gap: 4, paddingBottom: 32 },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#64748b",
-    marginBottom: 8,
-    marginTop: 16,
-    textTransform: "uppercase",
-  },
-  error: { color: "#ef4444", marginBottom: 8 },
-  success: { color: "#16a34a", marginBottom: 8 },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-    gap: 4,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 14,
-  },
-  rowLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
-  separator: { height: StyleSheet.hairlineWidth, backgroundColor: "#e2e8f0" },
-  label: { fontSize: 15, color: "#0f172a" },
-  unit: { fontSize: 13, color: "#94a3b8" },
-  price: { fontSize: 15, fontWeight: "600", color: "#2563eb" },
-  editButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "#eff6ff",
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-  },
-  editButtonPressed: { opacity: 0.7 },
-  editButtonText: { color: "#2563eb", fontWeight: "700", fontSize: 13 },
-  editRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    width: 70,
-    fontSize: 14,
-    color: "#0f172a",
-  },
-  saveText: { color: "#2563eb", fontWeight: "700", fontSize: 13 },
-  cancelText: { color: "#94a3b8", fontSize: 13 },
-  note: { color: "#64748b", fontSize: 13, paddingVertical: 12, lineHeight: 18 },
-  addItemRow: { gap: 8, marginTop: 12 },
-  addItemInput: {},
-  addItemUnit: {},
-  addButton: {
-    backgroundColor: "#eff6ff",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 12,
-  },
-  addButtonPressed: { opacity: 0.7 },
-  addButtonText: { color: "#2563eb", fontWeight: "700", fontSize: 14 },
-  fieldLabel: { fontSize: 13, color: "#475569", marginTop: 10, marginBottom: 4 },
-  input2: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  saveButton: {
-    backgroundColor: "#2563eb",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 14,
-    marginBottom: 14,
-  },
-  saveButtonPressed: { opacity: 0.8 },
-  saveButtonText: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { backgroundColor: colors.background },
+    container: { padding: 16, gap: 4, paddingBottom: 32 },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: colors.textMuted,
+      marginBottom: 8,
+      marginTop: 16,
+      textTransform: "uppercase",
+    },
+    error: { color: colors.error, marginBottom: 8 },
+    success: { color: "#16a34a", marginBottom: 8 },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+      gap: 4,
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 14,
+    },
+    rowLeft: { flexDirection: "row", alignItems: "center", gap: 6 },
+    separator: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border },
+    label: { fontSize: 15, color: colors.text },
+    unit: { fontSize: 13, color: colors.textFaint },
+    price: { fontSize: 15, fontWeight: "600", color: colors.primary },
+    editButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: colors.primarySoft,
+      borderRadius: 8,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+    },
+    editButtonPressed: { opacity: 0.7 },
+    editButtonText: { color: colors.primary, fontWeight: "700", fontSize: 13 },
+    editRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      width: 70,
+      fontSize: 14,
+      color: colors.text,
+    },
+    saveText: { color: colors.primary, fontWeight: "700", fontSize: 13 },
+    cancelText: { color: colors.textFaint, fontSize: 13 },
+    note: { color: colors.textMuted, fontSize: 13, paddingVertical: 12, lineHeight: 18 },
+    addItemRow: { gap: 8, marginTop: 12 },
+    addItemInput: {},
+    addItemUnit: {},
+    addButton: {
+      backgroundColor: colors.primarySoft,
+      borderRadius: 10,
+      paddingVertical: 12,
+      alignItems: "center",
+      marginTop: 10,
+      marginBottom: 12,
+    },
+    addButtonPressed: { opacity: 0.7 },
+    addButtonText: { color: colors.primary, fontWeight: "700", fontSize: 14 },
+    fieldLabel: { fontSize: 13, color: colors.textSecondary, marginTop: 10, marginBottom: 4 },
+    input2: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 15,
+      color: colors.text,
+    },
+    saveButton: {
+      backgroundColor: colors.primary,
+      borderRadius: 10,
+      paddingVertical: 12,
+      alignItems: "center",
+      marginTop: 14,
+      marginBottom: 14,
+    },
+    saveButtonPressed: { opacity: 0.8 },
+    saveButtonText: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
+  });

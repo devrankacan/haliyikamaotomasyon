@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
+
 export type DropdownOption<T extends string> = { value: T; label: string; danger?: boolean };
 
 export function Dropdown<T extends string>({
@@ -12,6 +15,7 @@ export function Dropdown<T extends string>({
   options: DropdownOption<T>[];
   onChange: (value: T) => void;
 }) {
+  const styles = useThemedStyles(createStyles);
   const [open, setOpen] = useState(false);
   const current = options.find((o) => o.value === value);
 
@@ -58,44 +62,46 @@ export function Dropdown<T extends string>({
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-  },
-  triggerText: { fontSize: 15, fontWeight: "600", color: "#0f172a" },
-  chevron: { color: "#64748b", fontSize: 14 },
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  menu: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    width: "100%",
-    maxWidth: 360,
-    maxHeight: 420,
-    paddingVertical: 6,
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-  },
-  menuItemPressed: { backgroundColor: "#f1f5f9" },
-  menuItemText: { fontSize: 15, color: "#0f172a" },
-  menuItemDanger: { color: "#ef4444" },
-  menuItemActiveText: { fontWeight: "700", color: "#2563eb" },
-  check: { color: "#2563eb", fontWeight: "700" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    trigger: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 10,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+      backgroundColor: colors.surface,
+    },
+    triggerText: { fontSize: 15, fontWeight: "600", color: colors.text },
+    chevron: { color: colors.textMuted, fontSize: 14 },
+    backdrop: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+    },
+    menu: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      width: "100%",
+      maxWidth: 360,
+      maxHeight: 420,
+      paddingVertical: 6,
+    },
+    menuItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 14,
+      paddingHorizontal: 18,
+    },
+    menuItemPressed: { backgroundColor: colors.background },
+    menuItemText: { fontSize: 15, color: colors.text },
+    menuItemDanger: { color: colors.error },
+    menuItemActiveText: { fontWeight: "700", color: colors.primary },
+    check: { color: colors.primary, fontWeight: "700" },
+  });

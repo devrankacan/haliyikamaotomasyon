@@ -1,5 +1,8 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
+
 type Props = {
   title: string;
   onPress: () => void;
@@ -8,6 +11,7 @@ type Props = {
 };
 
 export function PrimaryButton({ title, onPress, disabled, variant = "primary" }: Props) {
+  const styles = useThemedStyles(createStyles);
   const isSecondary = variant === "secondary";
   return (
     <Pressable
@@ -24,30 +28,31 @@ export function PrimaryButton({ title, onPress, disabled, variant = "primary" }:
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primary: {
-    backgroundColor: "#2563eb",
-  },
-  secondary: {
-    backgroundColor: "#eef2ff",
-    borderWidth: 1,
-    borderColor: "#c7d2fe",
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  text: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  secondaryText: {
-    color: "#2563eb",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    base: {
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    secondary: {
+      backgroundColor: colors.primarySoft,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+    },
+    pressed: {
+      opacity: 0.7,
+    },
+    text: {
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "700",
+    },
+    secondaryText: {
+      color: colors.primary,
+    },
+  });

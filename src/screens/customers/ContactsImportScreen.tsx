@@ -9,6 +9,9 @@ import { supabase } from "@/lib/supabase";
 import { Avatar } from "@/components/Avatar";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { EmptyState } from "@/components/EmptyState";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ContactsImport">;
 
@@ -19,6 +22,8 @@ function normalize(text: string) {
 }
 
 export function ContactsImportScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
@@ -117,7 +122,7 @@ export function ContactsImportScreen({ navigation }: Props) {
           value={query}
           onChangeText={setQuery}
           placeholder="İsimle ara"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textFaint}
         />
       </View>
 
@@ -158,56 +163,57 @@ export function ContactsImportScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9" },
-  searchWrap: { padding: 16, paddingBottom: 8 },
-  searchInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  list: { padding: 16, paddingTop: 4, gap: 8, paddingBottom: 100 },
-  row: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "transparent",
-  },
-  rowSelected: { borderColor: "#2563eb", backgroundColor: "#eff6ff" },
-  rowPressed: { opacity: 0.7 },
-  info: { flex: 1 },
-  name: { fontSize: 15, fontWeight: "600", color: "#0f172a" },
-  phone: { color: "#64748b", marginTop: 2, fontSize: 13 },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "#cbd5e1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkboxChecked: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  checkmark: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#ffffff",
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
-    gap: 8,
-  },
-  error: { color: "#ef4444" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    searchWrap: { padding: 16, paddingBottom: 8 },
+    searchInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.text,
+    },
+    list: { padding: 16, paddingTop: 4, gap: 8, paddingBottom: 100 },
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      borderWidth: 1,
+      borderColor: "transparent",
+    },
+    rowSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+    rowPressed: { opacity: 0.7 },
+    info: { flex: 1 },
+    name: { fontSize: 15, fontWeight: "600", color: colors.text },
+    phone: { color: colors.textMuted, marginTop: 2, fontSize: 13 },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderRadius: 6,
+      borderWidth: 2,
+      borderColor: colors.borderStrong,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    checkboxChecked: { backgroundColor: colors.primary, borderColor: colors.primary },
+    checkmark: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
+    footer: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      gap: 8,
+    },
+    error: { color: colors.error },
+  });

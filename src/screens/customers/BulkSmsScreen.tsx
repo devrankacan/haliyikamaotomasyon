@@ -7,12 +7,17 @@ import { Avatar } from "@/components/Avatar";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { EmptyState } from "@/components/EmptyState";
 import type { Customer } from "@/types/domain";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 function normalize(text: string) {
   return text.toLocaleLowerCase("tr-TR");
 }
 
 export function BulkSmsScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: customers, isLoading } = useCustomers();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -94,7 +99,7 @@ export function BulkSmsScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder="İsim veya telefon ile ara"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
         />
       </View>
@@ -143,7 +148,7 @@ export function BulkSmsScreen() {
           value={message}
           onChangeText={setMessage}
           placeholder="Göndermek istediğiniz mesajı yazın…"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textFaint}
           multiline
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -157,75 +162,76 @@ export function BulkSmsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9" },
-  searchWrap: { padding: 16, paddingBottom: 0 },
-  searchInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  selectAllRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  selectAllText: { fontSize: 14, fontWeight: "700", color: "#2563eb" },
-  list: { paddingHorizontal: 16, gap: 8, paddingBottom: 200 },
-  row: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "transparent",
-  },
-  rowSelected: { borderColor: "#2563eb", backgroundColor: "#eff6ff" },
-  rowPressed: { opacity: 0.7 },
-  info: { flex: 1 },
-  name: { fontSize: 15, fontWeight: "600", color: "#0f172a" },
-  phone: { color: "#64748b", marginTop: 2, fontSize: 13 },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "#cbd5e1",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#ffffff",
-  },
-  checkboxChecked: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  checkmark: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#ffffff",
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
-    gap: 8,
-  },
-  messageInput: {
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
-    color: "#0f172a",
-    minHeight: 70,
-    textAlignVertical: "top",
-  },
-  error: { color: "#ef4444" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    searchWrap: { padding: 16, paddingBottom: 0 },
+    searchInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.text,
+    },
+    selectAllRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    selectAllText: { fontSize: 14, fontWeight: "700", color: colors.primary },
+    list: { paddingHorizontal: 16, gap: 8, paddingBottom: 200 },
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      borderWidth: 1,
+      borderColor: "transparent",
+    },
+    rowSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+    rowPressed: { opacity: 0.7 },
+    info: { flex: 1 },
+    name: { fontSize: 15, fontWeight: "600", color: colors.text },
+    phone: { color: colors.textMuted, marginTop: 2, fontSize: 13 },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderRadius: 6,
+      borderWidth: 2,
+      borderColor: colors.borderStrong,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.surface,
+    },
+    checkboxChecked: { backgroundColor: colors.primary, borderColor: colors.primary },
+    checkmark: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
+    footer: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: colors.surface,
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      gap: 8,
+    },
+    messageInput: {
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 15,
+      color: colors.text,
+      minHeight: 70,
+      textAlignVertical: "top",
+    },
+    error: { color: colors.error },
+  });

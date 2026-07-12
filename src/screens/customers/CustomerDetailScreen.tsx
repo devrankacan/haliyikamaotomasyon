@@ -10,11 +10,14 @@ import type { Customer, CustomerAddress, Order } from "@/types/domain";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Avatar } from "@/components/Avatar";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CustomerDetail">;
 
 export function CustomerDetailScreen({ route }: Props) {
   const { customerId } = route.params;
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { data: customers } = useCustomers();
   const { data: orders } = useOrders();
@@ -94,49 +97,50 @@ export function CustomerDetailScreen({ route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { backgroundColor: "#f1f5f9" },
-  container: { padding: 16, gap: 4 },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    gap: 4,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  headerRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
-  headerInfo: { flex: 1 },
-  name: { fontSize: 18, fontWeight: "700", color: "#0f172a" },
-  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#64748b", marginTop: 14, textTransform: "uppercase" },
-  sectionTitleOutside: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#64748b",
-    marginTop: 20,
-    marginBottom: 4,
-    textTransform: "uppercase",
-  },
-  detail: { color: "#334155", fontSize: 14 },
-  editText: { color: "#2563eb", fontWeight: "700", fontSize: 15, marginRight: 4 },
-  buttonWrap: { marginTop: 16 },
-  orderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 8,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  orderRowPressed: { opacity: 0.6 },
-  notFound: { padding: 24, textAlign: "center", color: "#64748b" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { backgroundColor: colors.background },
+    container: { padding: 16, gap: 4 },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      gap: 4,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    headerRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
+    headerInfo: { flex: 1 },
+    name: { fontSize: 18, fontWeight: "700", color: colors.text },
+    sectionTitle: { fontSize: 14, fontWeight: "700", color: colors.textMuted, marginTop: 14, textTransform: "uppercase" },
+    sectionTitleOutside: {
+      fontSize: 14,
+      fontWeight: "700",
+      color: colors.textMuted,
+      marginTop: 20,
+      marginBottom: 4,
+      textTransform: "uppercase",
+    },
+    detail: { color: colors.textSecondary, fontSize: 14 },
+    editText: { color: colors.primary, fontWeight: "700", fontSize: 15, marginRight: 4 },
+    buttonWrap: { marginTop: 16 },
+    orderRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      padding: 12,
+      marginTop: 8,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    orderRowPressed: { opacity: 0.6 },
+    notFound: { padding: 24, textAlign: "center", color: colors.textMuted },
+  });

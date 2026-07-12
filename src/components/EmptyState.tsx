@@ -1,5 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
+
 type Props = {
   message: string;
   actionLabel?: string;
@@ -7,6 +10,7 @@ type Props = {
 };
 
 export function EmptyState({ message, actionLabel, onAction }: Props) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.container}>
       <Text style={styles.icon}>🗂️</Text>
@@ -23,34 +27,35 @@ export function EmptyState({ message, actionLabel, onAction }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    gap: 16,
-  },
-  icon: {
-    fontSize: 40,
-  },
-  text: {
-    color: "#64748b",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  action: {
-    backgroundColor: "#2563eb",
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-  },
-  actionPressed: {
-    opacity: 0.7,
-  },
-  actionText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+      gap: 16,
+    },
+    icon: {
+      fontSize: 40,
+    },
+    text: {
+      color: colors.textMuted,
+      fontSize: 15,
+      textAlign: "center",
+    },
+    action: {
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+    },
+    actionPressed: {
+      opacity: 0.7,
+    },
+    actionText: {
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "700",
+    },
+  });

@@ -11,6 +11,8 @@ import { WhatsAppIcon } from "@/components/icons";
 import type { Customer, Order, OrderItem } from "@/types/domain";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, PAYMENT_STATUS_LABELS, type OrderStatus } from "@/constants/orderStatus";
 import { buildStatusMessage, openWhatsapp } from "@/lib/whatsapp";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderDetail">;
 
@@ -21,6 +23,7 @@ const STATUS_OPTIONS: DropdownOption<OrderStatus>[] = ORDER_STATUSES.map((status
 }));
 
 export function OrderDetailScreen({ route }: Props) {
+  const styles = useThemedStyles(createStyles);
   const { orderId } = route.params;
   const { data: orders } = useOrders();
   const { data: customers } = useCustomers();
@@ -100,38 +103,39 @@ export function OrderDetailScreen({ route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { backgroundColor: "#f1f5f9" },
-  container: { padding: 16, gap: 12 },
-  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  orderId: { fontSize: 18, fontWeight: "700", color: "#0f172a" },
-  customerName: { fontSize: 15, fontWeight: "600", color: "#334155", marginTop: 8 },
-  sectionTitle: { fontSize: 14, fontWeight: "700", color: "#64748b", marginTop: 4, textTransform: "uppercase" },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 14,
-    gap: 4,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  whatsappButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "#25D366",
-    borderRadius: 10,
-    paddingVertical: 12,
-    marginTop: 12,
-  },
-  whatsappButtonPressed: { opacity: 0.8 },
-  whatsappButtonText: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
-  itemType: { fontWeight: "600", color: "#0f172a" },
-  detail: { color: "#334155", fontSize: 14 },
-  error: { color: "#ef4444", marginTop: 8 },
-  notFound: { padding: 24, textAlign: "center", color: "#64748b" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { backgroundColor: colors.background },
+    container: { padding: 16, gap: 12 },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    orderId: { fontSize: 18, fontWeight: "700", color: colors.text },
+    customerName: { fontSize: 15, fontWeight: "600", color: colors.textSecondary, marginTop: 8 },
+    sectionTitle: { fontSize: 14, fontWeight: "700", color: colors.textMuted, marginTop: 4, textTransform: "uppercase" },
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 14,
+      gap: 4,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    whatsappButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      backgroundColor: "#25D366",
+      borderRadius: 10,
+      paddingVertical: 12,
+      marginTop: 12,
+    },
+    whatsappButtonPressed: { opacity: 0.8 },
+    whatsappButtonText: { color: "#ffffff", fontWeight: "700", fontSize: 14 },
+    itemType: { fontWeight: "600", color: colors.text },
+    detail: { color: colors.textSecondary, fontSize: 14 },
+    error: { color: colors.error, marginTop: 8 },
+    notFound: { padding: 24, textAlign: "center", color: colors.textMuted },
+  });

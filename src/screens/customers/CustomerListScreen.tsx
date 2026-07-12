@@ -12,6 +12,9 @@ import { Avatar } from "@/components/Avatar";
 import { AlphabetIndex } from "@/components/AlphabetIndex";
 import { ContactBookIcon, PersonIcon } from "@/components/icons";
 import type { Customer } from "@/types/domain";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = BottomTabScreenProps<MainTabsParamList, "Customers">;
 
@@ -41,6 +44,8 @@ function groupIntoSections(customers: Customer[]) {
 
 export function CustomerListScreen(_props: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: customers, isLoading } = useCustomers();
   const [query, setQuery] = useState("");
   const [chooserOpen, setChooserOpen] = useState(false);
@@ -87,7 +92,7 @@ export function CustomerListScreen(_props: Props) {
               navigation.navigate("CustomerForm", {});
             }}
           >
-            <PersonIcon size={20} color="#2563eb" />
+            <PersonIcon size={20} color={colors.primary} />
             <Text style={styles.chooserText}>Manuel Müşteri Ekle</Text>
           </Pressable>
           <Pressable
@@ -97,7 +102,7 @@ export function CustomerListScreen(_props: Props) {
               navigation.navigate("ContactsImport");
             }}
           >
-            <ContactBookIcon size={20} color="#2563eb" />
+            <ContactBookIcon size={20} color={colors.primary} />
             <Text style={styles.chooserText}>Rehberden Ekle</Text>
           </Pressable>
         </View>
@@ -122,7 +127,7 @@ export function CustomerListScreen(_props: Props) {
           value={query}
           onChangeText={setQuery}
           placeholder="İsim veya telefon ile ara"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
           clearButtonMode="while-editing"
         />
@@ -164,67 +169,68 @@ export function CustomerListScreen(_props: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9" },
-  searchWrap: { padding: 16, paddingBottom: 8 },
-  searchInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  listWrap: { flex: 1 },
-  list: { padding: 16, paddingTop: 4, paddingRight: 28, gap: 8 },
-  sectionHeader: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#64748b",
-    backgroundColor: "#f1f5f9",
-    paddingVertical: 4,
-  },
-  row: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  rowPressed: { opacity: 0.6 },
-  info: { flex: 1 },
-  name: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
-  phone: { color: "#64748b", marginTop: 2 },
-  chevron: { color: "#cbd5e1", fontSize: 22 },
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.4)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  chooserMenu: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    width: "100%",
-    maxWidth: 340,
-    paddingVertical: 6,
-  },
-  chooserItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-  },
-  chooserItemPressed: { backgroundColor: "#f1f5f9" },
-  chooserText: { fontSize: 15, fontWeight: "600", color: "#0f172a" },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    searchWrap: { padding: 16, paddingBottom: 8 },
+    searchInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.text,
+    },
+    listWrap: { flex: 1 },
+    list: { padding: 16, paddingTop: 4, paddingRight: 28, gap: 8 },
+    sectionHeader: {
+      fontSize: 13,
+      fontWeight: "700",
+      color: colors.textMuted,
+      backgroundColor: colors.background,
+      paddingVertical: 4,
+    },
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    rowPressed: { opacity: 0.6 },
+    info: { flex: 1 },
+    name: { fontSize: 16, fontWeight: "600", color: colors.text },
+    phone: { color: colors.textMuted, marginTop: 2 },
+    chevron: { color: colors.borderStrong, fontSize: 22 },
+    backdrop: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+    },
+    chooserMenu: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      width: "100%",
+      maxWidth: 340,
+      paddingVertical: 6,
+    },
+    chooserItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingVertical: 16,
+      paddingHorizontal: 18,
+    },
+    chooserItemPressed: { backgroundColor: colors.background },
+    chooserText: { fontSize: 15, fontWeight: "600", color: colors.text },
+  });

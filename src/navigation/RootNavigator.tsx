@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
+import { useMemo } from "react";
 import { Image, View } from "react-native";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -18,28 +19,20 @@ import { OrderCustomerPickerScreen } from "@/screens/orders/OrderCustomerPickerS
 import { OrderDetailScreen } from "@/screens/orders/OrderDetailScreen";
 import { OrderFormScreen } from "@/screens/orders/OrderFormScreen";
 import { SettingsScreen } from "@/screens/settings/SettingsScreen";
+import { useTheme } from "@/theme/ThemeContext";
+import type { ThemeColors } from "@/theme/colors";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
-const navTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: "#2563eb",
-    background: "#f8fafc",
-    card: "#ffffff",
-    text: "#0f172a",
-    border: "#e2e8f0",
-  },
-};
-
-const screenHeaderOptions = {
-  headerStyle: { backgroundColor: "#ffffff" },
-  headerTitleStyle: { color: "#0f172a", fontWeight: "700" as const },
-  headerTintColor: "#2563eb",
-  headerShadowVisible: false,
-};
+function buildScreenHeaderOptions(colors: ThemeColors) {
+  return {
+    headerStyle: { backgroundColor: colors.surface },
+    headerTitleStyle: { color: colors.text, fontWeight: "700" as const },
+    headerTintColor: colors.primary,
+    headerShadowVisible: false,
+  };
+}
 
 const TAB_ICONS: Record<keyof MainTabsParamList, (props: { size: number; color: string }) => ReactElement> = {
   Dashboard: ({ size, color }) => <GridIcon size={size} color={color} />,
@@ -50,18 +43,22 @@ const TAB_ICONS: Record<keyof MainTabsParamList, (props: { size: number; color: 
 };
 
 function MainTabs() {
+  const { colors, dark } = useTheme();
+  const screenHeaderOptions = buildScreenHeaderOptions(colors);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         ...screenHeaderOptions,
-        tabBarActiveTintColor: "#2563eb",
-        tabBarInactiveTintColor: "#94a3b8",
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textFaint,
         tabBarLabelStyle: { fontSize: 12, fontWeight: "600" as const },
         tabBarStyle: {
           height: 62,
           paddingTop: 6,
           paddingBottom: 8,
-          borderTopColor: "#e2e8f0",
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
         },
         tabBarIcon: ({ color, size }) => {
           const IconComponent = TAB_ICONS[route.name];
@@ -70,7 +67,7 @@ function MainTabs() {
         headerLeft: () => (
           <View style={{ marginLeft: 16 }}>
             <Image
-              source={require("../../assets/logo.png")}
+              source={dark ? require("../../assets/logo-white.png") : require("../../assets/logo.png")}
               style={{ width: 108, height: 108 / (586 / 135) }}
               resizeMode="contain"
             />
@@ -89,6 +86,23 @@ function MainTabs() {
 
 export function RootNavigator() {
   // TODO(Faz 1): Supabase auth durumuna göre Login <-> MainTabs geçişini yönet.
+  const { colors, dark } = useTheme();
+  const screenHeaderOptions = buildScreenHeaderOptions(colors);
+  const navTheme = useMemo(
+    () => ({
+      ...(dark ? DarkTheme : DefaultTheme),
+      colors: {
+        ...(dark ? DarkTheme.colors : DefaultTheme.colors),
+        primary: colors.primary,
+        background: colors.background,
+        card: colors.surface,
+        text: colors.text,
+        border: colors.border,
+      },
+    }),
+    [colors, dark]
+  );
+
   return (
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

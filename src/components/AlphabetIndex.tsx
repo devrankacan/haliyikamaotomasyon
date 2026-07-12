@@ -1,12 +1,16 @@
 import { useRef, useState } from "react";
 import { PanResponder, StyleSheet, Text, View } from "react-native";
 
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
+
 type Props = {
   letters: string[];
   onSelect: (letter: string) => void;
 };
 
 export function AlphabetIndex({ letters, onSelect }: Props) {
+  const styles = useThemedStyles(createStyles);
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
   const containerHeightRef = useRef(0);
   const lettersRef = useRef(letters);
@@ -70,31 +74,32 @@ export function AlphabetIndex({ letters, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    right: 2,
-    top: 0,
-    bottom: 0,
-    justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-  },
-  item: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 10,
-  },
-  letter: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#2563eb",
-  },
-  letterActive: {
-    color: "#ffffff",
-    backgroundColor: "#2563eb",
-    borderRadius: 8,
-    paddingHorizontal: 4,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      right: 2,
+      top: 0,
+      bottom: 0,
+      justifyContent: "center",
+      paddingVertical: 8,
+      paddingHorizontal: 6,
+    },
+    item: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: 10,
+    },
+    letter: {
+      fontSize: 11,
+      fontWeight: "700",
+      color: colors.primary,
+    },
+    letterActive: {
+      color: "#ffffff",
+      backgroundColor: colors.primary,
+      borderRadius: 8,
+      paddingHorizontal: 4,
+    },
+  });

@@ -7,6 +7,9 @@ import { useCustomers } from "@/hooks/useCustomers";
 import { EmptyState } from "@/components/EmptyState";
 import { Avatar } from "@/components/Avatar";
 import type { Customer } from "@/types/domain";
+import { useTheme } from "@/theme/ThemeContext";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+import type { ThemeColors } from "@/theme/colors";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OrderCustomerPicker">;
 
@@ -15,6 +18,8 @@ function normalize(text: string) {
 }
 
 export function OrderCustomerPickerScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { data: customers, isLoading } = useCustomers();
   const [query, setQuery] = useState("");
 
@@ -46,7 +51,7 @@ export function OrderCustomerPickerScreen({ navigation }: Props) {
           value={query}
           onChangeText={setQuery}
           placeholder="İsim veya telefon ile ara"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textFaint}
           autoCapitalize="none"
           clearButtonMode="while-editing"
         />
@@ -78,35 +83,36 @@ export function OrderCustomerPickerScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#f1f5f9" },
-  searchWrap: { padding: 16, paddingBottom: 8 },
-  searchInput: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: "#0f172a",
-  },
-  list: { padding: 16, paddingTop: 4, gap: 8 },
-  row: {
-    backgroundColor: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    shadowColor: "#0f172a",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  rowPressed: { opacity: 0.6 },
-  info: { flex: 1 },
-  name: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
-  phone: { color: "#64748b", marginTop: 2 },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.background },
+    searchWrap: { padding: 16, paddingBottom: 8 },
+    searchInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.text,
+    },
+    list: { padding: 16, paddingTop: 4, gap: 8 },
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      shadowColor: colors.shadow,
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 1,
+    },
+    rowPressed: { opacity: 0.6 },
+    info: { flex: 1 },
+    name: { fontSize: 16, fontWeight: "600", color: colors.text },
+    phone: { color: colors.textMuted, marginTop: 2 },
+  });
